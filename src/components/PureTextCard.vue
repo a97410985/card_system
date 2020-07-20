@@ -28,25 +28,45 @@
 
 <script lang="ts">
 import Vue from "vue";
-
+import axios from "axios";
 
 export default Vue.extend({
   name: "PureTextCard",
 
-  props: ["textContent", "addCardTF", "index"],
+  props: ["cardData", "addCardTF", "index"],
 
-  data: () => ({ editTF: true }),
+  data() {
+    return { editTF: true, textContent: this.cardData.text };
+  },
 
   methods: {
     changeEditMode() {
+      if (this.editTF) {
+        // 要update資料，partial updates to documents
+        axios({
+          method: "post",
+          baseURL: "/api",
+          url: `card_system/card/${this.cardData.id}/_update`,
+          data: {
+            doc: {
+              text: this.textContent,
+            },
+          },
+          responseType: "json",
+        })
+          .then((result) => {
+            console.log(result);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
       this.editTF = !this.editTF;
     },
     addToLeft() {
-      console.log("haha");
       this.$emit("addCard", this.index, 0);
     },
     addToRight() {
-      console.log("haha");
       this.$emit("addCard", this.index, 1);
     },
   },
