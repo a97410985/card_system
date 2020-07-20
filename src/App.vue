@@ -89,6 +89,7 @@ export default Vue.extend({
       // axios("/api/").then((Response) => {
       //   console.log(Response);
       // });
+      alert("add card");
       const uuid: string = uuidv4();
       const obj: Card = {
         id: uuid,

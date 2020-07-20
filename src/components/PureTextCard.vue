@@ -1,42 +1,32 @@
 <template>
-  <v-card class="mx-auto">
-    <v-card-actions v-if="addCardTF">
-      <v-btn @click="addToLeft" color="primary">
-        加到左邊
-      </v-btn>
-      <v-spacer></v-spacer>
-      <v-btn @click="addToRight" color="primary">
-        加到右邊
-      </v-btn>
-    </v-card-actions>
-    <v-card-text>
-      <v-textarea
-        v-bind:readonly="!editTF"
-        :auto-grow="true"
-        :outlined="true"
-        v-model="textContent"
-        label="純文字敘述"
-      ></v-textarea>
-    </v-card-text>
-    <v-card-actions>
-      <v-btn @click="changeEditMode" color="primary">{{
-        editTF ? "修改完成" : "修改"
-      }}</v-btn>
-    </v-card-actions>
-  </v-card>
+  <card :cardData="cardData" :addCardTF="addCardTF" :index="index">
+    <v-textarea
+      :readonly="!editTF"
+      :auto-grow="true"
+      :outlined="true"
+      style="margin: 10px 10px 0 10px "
+      v-model="textContent"
+      label="純文字敘述"
+    ></v-textarea>
+    <v-btn @click="changeEditMode" color="primary">{{
+      editTF ? "修改完成" : "修改"
+    }}</v-btn>
+  </card>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import axios from "axios";
+import Card from "./Card.vue";
 
 export default Vue.extend({
   name: "PureTextCard",
 
-  props: ["cardData", "addCardTF", "index"],
+  components: { Card },
+  props: ["cardData", "index", "addCardTF"],
 
   data() {
-    return { editTF: true, textContent: this.cardData.text };
+    return { textContent: this.cardData.text, editTF: true };
   },
 
   methods: {
@@ -62,12 +52,6 @@ export default Vue.extend({
           });
       }
       this.editTF = !this.editTF;
-    },
-    addToLeft() {
-      this.$emit("addCard", this.index, 0);
-    },
-    addToRight() {
-      this.$emit("addCard", this.index, 1);
     },
   },
 });
