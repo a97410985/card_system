@@ -14,7 +14,9 @@
 
         <v-list>
           <v-list-item>
-            <v-list-item-title @click="importCards">import</v-list-item-title>
+            <v-list-item-title @click="dropImportJsonDialog = true"
+              >import</v-list-item-title
+            >
           </v-list-item>
           <v-list-item>
             <v-list-item-title @click="exportCards">export</v-list-item-title>
@@ -69,6 +71,15 @@
         </div>
       </div>
     </v-main>
+    <v-dialog v-model="dropImportJsonDialog" width="300">
+      <v-card>
+        <v-card-title>拖曳json檔到此</v-card-title>
+        <drop-files-area
+          style="height: 300px"
+          @DropDownGetFiles="handleImoprtJson"
+        ></drop-files-area>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
@@ -76,6 +87,7 @@
 import Vue from "vue";
 import PureTextCard from "./components/PureTextCard.vue";
 import ImageCard from "./components/ImageCard.vue";
+import DropFilesArea from "./components/DropFilesArea.vue";
 
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
@@ -85,6 +97,8 @@ import {
   cardType,
   genralCardTpye,
   ImageCardInterface,
+  PureTextCardMappings,
+  ImageCardMappings,
 } from "./card";
 
 axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
@@ -95,6 +109,7 @@ export default Vue.extend({
   components: {
     PureTextCard,
     ImageCard,
+    DropFilesArea,
   },
 
   methods: {
@@ -155,8 +170,15 @@ export default Vue.extend({
     chooseCardType(typeName: cardType) {
       this.curAddCardType = typeName;
     },
-    importCards() {
-      console.log("importCards");
+    handleImoprtJson(files: FileList) {
+      console.log("handleImoprtJson");
+      console.log(files);
+      const reader = new FileReader();
+      reader.onload = function() {
+        if (typeof reader.result === "string")
+          console.log(JSON.parse(reader.result));
+      };
+      reader.readAsText(files[0]);
     },
     exportCards() {
       console.log("exportCards");
@@ -242,21 +264,29 @@ export default Vue.extend({
           method: "put",
           baseURL: "/api",
           url: "puretextcard/",
-          data: {
-            mappings: {
-              properties: {
-                id: {
-                  type: "keyword",
-                },
-                type: {
-                  type: "keyword",
-                },
-                text: {
-                  type: "text",
-                },
-              },
-            },
-          },
+          data: PureTextCardMappings,
+        }).then((result) => {
+          console.log("建立index成功");
+        });
+      });
+
+    // 會先檢查某種卡片的index是否存在，如果沒有就根據mapping建立
+    axios({
+      method: "head",
+      baseURL: "/api",
+      url: "imagecard/",
+    })
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((err) => {
+        console.log(err);
+        // 建立index與mappings
+        axios({
+          method: "put",
+          baseURL: "/api",
+          url: "imagecard/",
+          data: ImageCardMappings,
         }).then((result) => {
           console.log("建立index成功");
         });
@@ -315,6 +345,7 @@ export default Vue.extend({
     curAddCardType: "PureTextCard" as cardType,
     cards: [] as genralCardTpye[],
     cardTypes: cardTypes,
+    dropImportJsonDialog: false,
   }),
 });
 </script>

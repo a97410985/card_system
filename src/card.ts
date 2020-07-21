@@ -9,6 +9,54 @@ interface CardInterface {
   };
 }
 
+export const PureTextCardMappings = {
+  mappings: {
+    properties: {
+      id: {
+        type: "keyword",
+      },
+      type: {
+        type: "keyword",
+      },
+      text: {
+        type: "text",
+      },
+      style: {
+        width: {
+          type: "integer",
+        },
+        height: {
+          type: "integer",
+        },
+      },
+    },
+  },
+};
+
+export const ImageCardMappings = {
+  mappings: {
+    properties: {
+      id: {
+        type: "keyword",
+      },
+      type: {
+        type: "keyword",
+      },
+      img: {
+        type: "binary",
+      },
+      style: {
+        width: {
+          type: "integer",
+        },
+        height: {
+          type: "integer",
+        },
+      },
+    },
+  },
+};
+
 export interface PureTextCardInterface extends CardInterface {
   id: string;
   type: cardType;
