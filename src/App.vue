@@ -99,7 +99,7 @@ export default Vue.extend({
       axios({
         method: "put",
         baseURL: "/api",
-        url: `card_system/card/${uuid}`,
+        url: `${this.curAddCardType.toLowerCase()}/_doc/${uuid}`,
         data: obj,
         responseType: "json",
       })
@@ -118,10 +118,46 @@ export default Vue.extend({
   },
 
   created() {
+    // 會先檢查某種卡片的index是否存在，如果沒有就根據mapping建立
+    axios({
+      method: "head",
+      baseURL: "/api",
+      url: "puretextcard/",
+    })
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((err) => {
+        console.log(err);
+        // 建立index與mappings
+        axios({
+          method: "put",
+          baseURL: "/api",
+          url: "puretextcard/",
+          data: {
+            mappings: {
+              properties: {
+                id: {
+                  type: "keyword",
+                },
+                type: {
+                  type: "keyword",
+                },
+                text: {
+                  type: "text",
+                },
+              },
+            },
+          },
+        }).then((result) => {
+          console.log("建立index成功");
+        });
+      });
+
     axios({
       method: "get",
       baseURL: "/api",
-      url: "card_system/card/_search",
+      url: "/puretextcard/_doc/_search",
       responseType: "json",
     })
       .then((result) => {

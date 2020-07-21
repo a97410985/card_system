@@ -36,7 +36,9 @@ export default Vue.extend({
         axios({
           method: "post",
           baseURL: "/api",
-          url: `card_system/card/${this.cardData.id}/_update`,
+          url: `/${this.cardData.type.toLowerCase()}/_doc/${
+            this.cardData.id
+          }/_update`,
           data: {
             doc: {
               text: this.textContent,
