@@ -1,12 +1,12 @@
 <template>
   <v-card :style="cardStyle" class="mx-auto">
     <v-card-actions v-if="addCardTF">
-      <v-btn @click="addToLeft" color="primary">
-        加到左邊
+      <v-btn icon @click="addToLeft" color="primary">
+        <v-icon>keyboard_backspace</v-icon>
       </v-btn>
       <v-spacer></v-spacer>
-      <v-btn @click="addToRight" color="primary">
-        加到右邊
+      <v-btn icon @click="addToRight" color="primary">
+        <v-icon>arrow_right_alt</v-icon>
       </v-btn>
     </v-card-actions>
     <v-card-actions>
@@ -23,14 +23,18 @@
 
 <script lang="ts">
 import Vue from "vue";
+import axios from "axios";
+
 export default Vue.extend({
   props: ["cardData", "addCardTF", "index"],
-  data: () => ({
-    cardStyle: {
-      width: "250px",
-      height: "auto",
-    },
-  }),
+  data() {
+    return {
+      cardStyle: {
+        width: this.cardData.style.width + "px",
+        height: "auto",
+      },
+    };
+  },
 
   methods: {
     addToLeft() {
@@ -49,12 +53,41 @@ export default Vue.extend({
         vm = vm.$parent;
       }
     },
+    updateSize(width: number, height: number) {
+      // 要update資料，partial updates to documents
+      axios({
+        method: "post",
+        baseURL: "/api",
+        url: `/${this.cardData.type.toLowerCase()}/_doc/${
+          this.cardData.id
+        }/_update`,
+        data: {
+          doc: {
+            style: {
+              width: width,
+              height: height,
+            },
+          },
+        },
+        responseType: "json",
+      })
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     zoomIn() {
-      this.cardStyle.width = (this.$el.clientWidth + 100).toString() + "px";
+      const newWidth = this.$el.clientWidth + 100;
+      this.cardStyle.width = newWidth.toString() + "px";
+      this.updateSize(newWidth, 200);
     },
     zoomOut() {
       if (this.$el.clientWidth > 200) {
+        const newWidth = this.$el.clientWidth - 100;
         this.cardStyle.width = (this.$el.clientWidth - 100).toString() + "px";
+        this.updateSize(newWidth, 200);
       }
     },
   },

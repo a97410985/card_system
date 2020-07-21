@@ -105,12 +105,20 @@ export default Vue.extend({
           id: uuid,
           type: this.curAddCardType,
           text: "",
+          style: {
+            width: 250,
+            height: 200,
+          },
         } as PureTextCardInterface;
       } else if (this.curAddCardType === "ImageCard") {
         obj = {
           id: uuid,
           type: this.curAddCardType,
           img: "",
+          style: {
+            width: 250,
+            height: 200,
+          },
         } as ImageCardInterface;
       }
       alert("add card");
@@ -190,6 +198,7 @@ export default Vue.extend({
             id: cardsArr[i]._source.id,
             type: cardsArr[i]._source.type,
             text: cardsArr[i]._source.text,
+            style: cardsArr[i]._source.style,
           };
           this.cards.push(card);
         }
@@ -212,6 +221,7 @@ export default Vue.extend({
             id: cardsArr[i]._source.id,
             type: cardsArr[i]._source.type,
             img: cardsArr[i]._source.img,
+            style: cardsArr[i]._source.style,
           };
           this.cards.push(card);
         }

@@ -2,13 +2,20 @@ export const cardTypes = ["PureTextCard", "ImageCard"] as const;
 
 export type cardType = typeof cardTypes[number];
 
-export interface PureTextCardInterface {
+interface CardInterface {
+  style: {
+    width: number;
+    height: number;
+  };
+}
+
+export interface PureTextCardInterface extends CardInterface {
   id: string;
   type: cardType;
   text: string;
 }
 
-export interface ImageCardInterface {
+export interface ImageCardInterface extends CardInterface {
   id: string;
   type: cardType;
   img: string;
