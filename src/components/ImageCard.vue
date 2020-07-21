@@ -7,7 +7,7 @@ import Vue from "vue";
 export default Vue.extend({
   name: "ImageCard",
 
-  props: ["cardData", "addCardTF", "index"],
+  props: ["cardData", "index", "addCardTF"],
 
   data() {
     return { editTF: true, textContent: this.cardData.text };
