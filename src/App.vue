@@ -160,6 +160,68 @@ export default Vue.extend({
     },
     exportCards() {
       console.log("exportCards");
+      const tempCardsObj: any = {};
+      // 到elasticSearch將所有卡片撈出來
+      axios({
+        method: "get",
+        baseURL: "/api",
+        url: "/puretextcard/_doc/_search",
+        responseType: "json",
+      })
+        .then((result) => {
+          console.log(result);
+          const cardsArr = result.data.hits.hits;
+          tempCardsObj["PureTextCard"] = [];
+          for (let i = 0; i < cardsArr.length; i++) {
+            console.log(cardsArr[i]._source.type);
+            const card: PureTextCardInterface = {
+              id: cardsArr[i]._source.id,
+              type: cardsArr[i]._source.type,
+              text: cardsArr[i]._source.text,
+              style: cardsArr[i]._source.style,
+            };
+            tempCardsObj["PureTextCard"].push(card);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .then(() => {
+          axios({
+            method: "get",
+            baseURL: "/api",
+            url: "/imagecard/_doc/_search",
+            responseType: "json",
+          })
+            .then((result) => {
+              console.log(result);
+              const cardsArr = result.data.hits.hits;
+              tempCardsObj["ImageCard"] = [];
+
+              for (let i = 0; i < cardsArr.length; i++) {
+                const card: ImageCardInterface = {
+                  id: cardsArr[i]._source.id,
+                  type: cardsArr[i]._source.type,
+                  img: cardsArr[i]._source.img,
+                  style: cardsArr[i]._source.style,
+                };
+                tempCardsObj["ImageCard"].push(card);
+              }
+              console.log(tempCardsObj);
+              const blob = new Blob([JSON.stringify(tempCardsObj)], {
+                type: "application/json",
+              });
+              const a = document.createElement("a");
+              document.body.appendChild(a);
+              a.href = window.URL.createObjectURL(blob);
+              a.download = "export";
+              a.click();
+              a.remove();
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        });
     },
   },
 
