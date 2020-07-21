@@ -64,9 +64,16 @@
 <script lang="ts">
 import Vue from "vue";
 import PureTextCard from "./components/PureTextCard.vue";
+import ImageCard from "./components/ImageCard.vue";
+
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import { Card, cardTypes, cardType } from "./card";
+import {
+  PureTextCardInterface,
+  cardTypes,
+  cardType,
+  genralCardTpye,
+} from "./card";
 
 axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
 
@@ -75,6 +82,7 @@ export default Vue.extend({
 
   components: {
     PureTextCard,
+    ImageCard,
   },
 
   methods: {
@@ -91,7 +99,7 @@ export default Vue.extend({
       // });
       alert("add card");
       const uuid: string = uuidv4();
-      const obj: Card = {
+      const obj: PureTextCardInterface = {
         id: uuid,
         type: this.curAddCardType,
         text: "",
@@ -164,7 +172,29 @@ export default Vue.extend({
         console.log(result);
         const cardsArr = result.data.hits.hits;
         for (let i = 0; i < cardsArr.length; i++) {
-          const card: Card = {
+          const card: PureTextCardInterface = {
+            id: cardsArr[i]._source.id,
+            type: cardsArr[i]._source.type,
+            text: cardsArr[i]._source.text,
+          };
+          this.cards.push(card);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    axios({
+      method: "get",
+      baseURL: "/api",
+      url: "/imagecard/_doc/_search",
+      responseType: "json",
+    })
+      .then((result) => {
+        console.log(result);
+        const cardsArr = result.data.hits.hits;
+        for (let i = 0; i < cardsArr.length; i++) {
+          const card: PureTextCardInterface = {
             id: cardsArr[i]._source.id,
             type: cardsArr[i]._source.type,
             text: cardsArr[i]._source.text,
@@ -180,10 +210,7 @@ export default Vue.extend({
   data: () => ({
     addCardTF: false,
     curAddCardType: "PureTextCard" as cardType,
-    cards: [
-      // { id: uuidv4(), text: "haha" },
-      // { id: uuidv4(), text: "haha2" },
-    ] as Card[],
+    cards: [] as genralCardTpye[],
     cardTypes: cardTypes,
   }),
 });
