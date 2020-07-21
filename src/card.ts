@@ -8,4 +8,10 @@ export interface PureTextCardInterface {
   text: string;
 }
 
-export type genralCardTpye = PureTextCardInterface;
+export interface ImageCardInterface {
+  id: string;
+  type: cardType;
+  img: string;
+}
+
+export type genralCardTpye = PureTextCardInterface | ImageCardInterface;

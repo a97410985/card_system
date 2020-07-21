@@ -4,7 +4,7 @@
       style=" margin: 10px; min-width:200px; min-height:200px; display: flex;"
     >
       <div
-        v-if="imgSrc === ''"
+        v-if="imgSrc === 'data:image/png;base64, '"
         style="border: gray dashed 1px; flex-grow: 1; margin-bottom:10px"
         @drop="atDrop"
         @dragover="dragOver"
@@ -19,6 +19,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Card from "./Card.vue";
+import axios from "axios";
 
 export default Vue.extend({
   name: "ImageCard",
@@ -27,7 +28,14 @@ export default Vue.extend({
   props: ["cardData", "index", "addCardTF"],
 
   data() {
-    return { editTF: true, textContent: this.cardData.text, imgSrc: "" };
+    return {
+      editTF: true,
+      imgSrc: "data:image/png;base64, " + this.cardData.img,
+    };
+  },
+
+  created() {
+    // 一開始要到
   },
 
   methods: {
@@ -51,6 +59,26 @@ export default Vue.extend({
           this.blobToBase64(e.dataTransfer.files[0], (base64) => {
             console.log(base64);
             this.imgSrc = "data:image/png;base64, " + base64;
+            // 要update資料，partial updates to documents
+            axios({
+              method: "post",
+              baseURL: "/api",
+              url: `/${this.cardData.type.toLowerCase()}/_doc/${
+                this.cardData.id
+              }/_update`,
+              data: {
+                doc: {
+                  img: base64,
+                },
+              },
+              responseType: "json",
+            })
+              .then((result) => {
+                console.log(result);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
           });
         }
       }

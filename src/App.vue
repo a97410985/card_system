@@ -73,6 +73,7 @@ import {
   cardTypes,
   cardType,
   genralCardTpye,
+  ImageCardInterface,
 } from "./card";
 
 axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
@@ -97,13 +98,23 @@ export default Vue.extend({
       // axios("/api/").then((Response) => {
       //   console.log(Response);
       // });
-      alert("add card");
       const uuid: string = uuidv4();
-      const obj: PureTextCardInterface = {
-        id: uuid,
-        type: this.curAddCardType,
-        text: "",
-      };
+      let obj;
+      if (this.curAddCardType === "PureTextCard") {
+        obj = {
+          id: uuid,
+          type: this.curAddCardType,
+          text: "",
+        } as PureTextCardInterface;
+      } else if (this.curAddCardType === "ImageCard") {
+        obj = {
+          id: uuid,
+          type: this.curAddCardType,
+          img: "",
+        } as ImageCardInterface;
+      }
+      alert("add card");
+
       axios({
         method: "put",
         baseURL: "/api",
@@ -117,7 +128,9 @@ export default Vue.extend({
         .catch((err) => {
           console.log(err);
         });
-      this.cards.splice(value + offset, 0, obj);
+      if (obj) {
+        this.cards.splice(value + offset, 0, obj);
+      }
       this.addCardTF = false;
     },
     chooseCardType(typeName: cardType) {
@@ -172,6 +185,7 @@ export default Vue.extend({
         console.log(result);
         const cardsArr = result.data.hits.hits;
         for (let i = 0; i < cardsArr.length; i++) {
+          console.log(cardsArr[i]._source.type);
           const card: PureTextCardInterface = {
             id: cardsArr[i]._source.id,
             type: cardsArr[i]._source.type,
@@ -194,10 +208,10 @@ export default Vue.extend({
         console.log(result);
         const cardsArr = result.data.hits.hits;
         for (let i = 0; i < cardsArr.length; i++) {
-          const card: PureTextCardInterface = {
+          const card: ImageCardInterface = {
             id: cardsArr[i]._source.id,
             type: cardsArr[i]._source.type,
-            text: cardsArr[i]._source.text,
+            img: cardsArr[i]._source.img,
           };
           this.cards.push(card);
         }
