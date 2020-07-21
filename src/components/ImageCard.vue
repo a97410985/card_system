@@ -11,7 +11,12 @@
       >
         allow drop file
       </div>
-      <img v-else :src="imgSrc" alt="haha no image" />
+      <img
+        v-else
+        style="width: 100%; height: auto;"
+        :src="imgSrc"
+        alt="haha no image"
+      />
     </div>
   </card>
 </template>
