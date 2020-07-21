@@ -5,6 +5,23 @@
 
       <v-spacer></v-spacer>
 
+      <v-menu open-on-hover top offset-y>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn v-bind="attrs" v-on="on" icon>
+            <v-icon>import_export</v-icon>
+          </v-btn>
+        </template>
+
+        <v-list>
+          <v-list-item>
+            <v-list-item-title @click="importCards">import</v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title @click="exportCards">export</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
       <v-btn
         v-if="addCardTF"
         color="error"
@@ -42,12 +59,6 @@
     <v-main>
       <div class="d-flex flex-row">
         <div v-for="(card, index) in cards" v-bind:key="card.id" class="mx-6">
-          <!-- <PureTextCard
-            @addCard="addCard"
-            :index="index"
-            :cardData="card"
-            :addCardTF="addCardTF"
-          /> -->
           <component
             v-bind:is="card.type"
             @addCard="addCard"
@@ -143,6 +154,12 @@ export default Vue.extend({
     },
     chooseCardType(typeName: cardType) {
       this.curAddCardType = typeName;
+    },
+    importCards() {
+      console.log("importCards");
+    },
+    exportCards() {
+      console.log("exportCards");
     },
   },
 

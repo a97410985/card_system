@@ -3,14 +3,11 @@
     <div
       style=" margin: 10px; min-width:200px; min-height:200px; display: flex;"
     >
-      <div
+      <drop-files-area
         v-if="imgSrc === 'data:image/png;base64, '"
-        style="border: gray dashed 1px; flex-grow: 1; margin-bottom:10px"
-        @drop="atDrop"
-        @dragover="dragOver"
-      >
-        allow drop file
-      </div>
+        style="flex-grow: 1; margin-bottom:10px"
+        @DropDownGetFiles="handleDropFiles"
+      ></drop-files-area>
       <img
         v-else
         style="width: 100%; height: auto;"
@@ -24,11 +21,12 @@
 <script lang="ts">
 import Vue from "vue";
 import Card from "./Card.vue";
+import DropFilesArea from "./DropFilesArea.vue";
 import axios from "axios";
 
 export default Vue.extend({
   name: "ImageCard",
-  components: { Card },
+  components: { Card, DropFilesArea },
 
   props: ["cardData", "index", "addCardTF"],
 
@@ -55,43 +53,33 @@ export default Vue.extend({
       };
       reader.readAsDataURL(blob);
     },
-    atDrop(e: DragEvent) {
-      e.preventDefault();
-      console.log(e.dataTransfer);
-      if (e.dataTransfer) {
-        console.log(e.dataTransfer.files);
-        if (e.dataTransfer.files.length > 0) {
-          this.blobToBase64(e.dataTransfer.files[0], (base64) => {
-            console.log(base64);
-            this.imgSrc = "data:image/png;base64, " + base64;
-            // 要update資料，partial updates to documents
-            axios({
-              method: "post",
-              baseURL: "/api",
-              url: `/${this.cardData.type.toLowerCase()}/_doc/${
-                this.cardData.id
-              }/_update`,
-              data: {
-                doc: {
-                  img: base64,
-                },
+    handleDropFiles(files: FileList) {
+      console.log("handleDropFiles");
+      if (files.length > 0) {
+        this.blobToBase64(files[0], (base64) => {
+          console.log(base64);
+          this.imgSrc = "data:image/png;base64, " + base64;
+          // 要update資料，partial updates to documents
+          axios({
+            method: "post",
+            baseURL: "/api",
+            url: `/${this.cardData.type.toLowerCase()}/_doc/${
+              this.cardData.id
+            }/_update`,
+            data: {
+              doc: {
+                img: base64,
               },
-              responseType: "json",
+            },
+            responseType: "json",
+          })
+            .then((result) => {
+              console.log(result);
             })
-              .then((result) => {
-                console.log(result);
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-          });
-        }
-      }
-    },
-    dragOver(e: DragEvent) {
-      e.preventDefault();
-      if (e.dataTransfer) {
-        e.dataTransfer.dropEffect = "copy";
+            .catch((err) => {
+              console.log(err);
+            });
+        });
       }
     },
   },
