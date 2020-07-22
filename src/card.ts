@@ -22,11 +22,13 @@ export const PureTextCardMappings = {
         type: "text",
       },
       style: {
-        width: {
-          type: "integer",
-        },
-        height: {
-          type: "integer",
+        properties: {
+          width: {
+            type: "integer",
+          },
+          height: {
+            type: "integer",
+          },
         },
       },
     },
@@ -46,11 +48,13 @@ export const ImageCardMappings = {
         type: "binary",
       },
       style: {
-        width: {
-          type: "integer",
-        },
-        height: {
-          type: "integer",
+        properties: {
+          width: {
+            type: "integer",
+          },
+          height: {
+            type: "integer",
+          },
         },
       },
     },

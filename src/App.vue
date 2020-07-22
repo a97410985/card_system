@@ -101,6 +101,11 @@ import {
   ImageCardMappings,
 } from "./card";
 
+import {
+  checkAndInitializePureTextCardPromsie,
+  checkAndInitializeImageCardPromsie,
+} from "./elasticSearchHelper";
+
 axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
 
 export default Vue.extend({
@@ -177,6 +182,30 @@ export default Vue.extend({
       reader.onload = function() {
         if (typeof reader.result === "string")
           console.log(JSON.parse(reader.result));
+        //const objArr = JSON.parse(reader.result);
+
+        //           let obj;
+        // if (this.curAddCardType === "PureTextCard") {
+        //   obj = {
+        //     id: uuid,
+        //     type: this.curAddCardType,
+        //     text: "",
+        //     style: {
+        //       width: 250,
+        //       height: 200,
+        //     },
+        //   } as PureTextCardInterface;
+        // } else if (this.curAddCardType === "ImageCard") {
+        //   obj = {
+        //     id: uuid,
+        //     type: this.curAddCardType,
+        //     img: "",
+        //     style: {
+        //       width: 250,
+        //       height: 200,
+        //     },
+        //   } as ImageCardInterface;
+        // }
       };
       reader.readAsText(files[0]);
     },
@@ -248,96 +277,59 @@ export default Vue.extend({
   },
 
   created() {
-    // 會先檢查某種卡片的index是否存在，如果沒有就根據mapping建立
-    axios({
-      method: "head",
-      baseURL: "/api",
-      url: "puretextcard/",
-    })
-      .then((result) => {
-        console.log(result);
+    Promise.all([
+      checkAndInitializePureTextCardPromsie,
+      checkAndInitializeImageCardPromsie,
+    ]).then((values) => {
+      console.log(values);
+
+      axios({
+        method: "get",
+        baseURL: "/api",
+        url: "/puretextcard/_doc/_search",
+        responseType: "json",
       })
-      .catch((err) => {
-        console.log(err);
-        // 建立index與mappings
-        axios({
-          method: "put",
-          baseURL: "/api",
-          url: "puretextcard/",
-          data: PureTextCardMappings,
-        }).then((result) => {
-          console.log("建立index成功");
+        .then((result) => {
+          console.log(result);
+          const cardsArr = result.data.hits.hits;
+          for (let i = 0; i < cardsArr.length; i++) {
+            console.log(cardsArr[i]._source.type);
+            const card: PureTextCardInterface = {
+              id: cardsArr[i]._source.id,
+              type: cardsArr[i]._source.type,
+              text: cardsArr[i]._source.text,
+              style: cardsArr[i]._source.style,
+            };
+            this.cards.push(card);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
         });
-      });
 
-    // 會先檢查某種卡片的index是否存在，如果沒有就根據mapping建立
-    axios({
-      method: "head",
-      baseURL: "/api",
-      url: "imagecard/",
-    })
-      .then((result) => {
-        console.log(result);
+      axios({
+        method: "get",
+        baseURL: "/api",
+        url: "/imagecard/_doc/_search",
+        responseType: "json",
       })
-      .catch((err) => {
-        console.log(err);
-        // 建立index與mappings
-        axios({
-          method: "put",
-          baseURL: "/api",
-          url: "imagecard/",
-          data: ImageCardMappings,
-        }).then((result) => {
-          console.log("建立index成功");
+        .then((result) => {
+          console.log(result);
+          const cardsArr = result.data.hits.hits;
+          for (let i = 0; i < cardsArr.length; i++) {
+            const card: ImageCardInterface = {
+              id: cardsArr[i]._source.id,
+              type: cardsArr[i]._source.type,
+              img: cardsArr[i]._source.img,
+              style: cardsArr[i]._source.style,
+            };
+            this.cards.push(card);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
         });
-      });
-
-    axios({
-      method: "get",
-      baseURL: "/api",
-      url: "/puretextcard/_doc/_search",
-      responseType: "json",
-    })
-      .then((result) => {
-        console.log(result);
-        const cardsArr = result.data.hits.hits;
-        for (let i = 0; i < cardsArr.length; i++) {
-          console.log(cardsArr[i]._source.type);
-          const card: PureTextCardInterface = {
-            id: cardsArr[i]._source.id,
-            type: cardsArr[i]._source.type,
-            text: cardsArr[i]._source.text,
-            style: cardsArr[i]._source.style,
-          };
-          this.cards.push(card);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
-    axios({
-      method: "get",
-      baseURL: "/api",
-      url: "/imagecard/_doc/_search",
-      responseType: "json",
-    })
-      .then((result) => {
-        console.log(result);
-        const cardsArr = result.data.hits.hits;
-        for (let i = 0; i < cardsArr.length; i++) {
-          const card: ImageCardInterface = {
-            id: cardsArr[i]._source.id,
-            type: cardsArr[i]._source.type,
-            img: cardsArr[i]._source.img,
-            style: cardsArr[i]._source.style,
-          };
-          this.cards.push(card);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    });
   },
 
   data: () => ({
