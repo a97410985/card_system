@@ -180,32 +180,50 @@ export default Vue.extend({
       console.log(files);
       const reader = new FileReader();
       reader.onload = function() {
-        if (typeof reader.result === "string")
-          console.log(JSON.parse(reader.result));
-        //const objArr = JSON.parse(reader.result);
-
-        //           let obj;
-        // if (this.curAddCardType === "PureTextCard") {
-        //   obj = {
-        //     id: uuid,
-        //     type: this.curAddCardType,
-        //     text: "",
-        //     style: {
-        //       width: 250,
-        //       height: 200,
-        //     },
-        //   } as PureTextCardInterface;
-        // } else if (this.curAddCardType === "ImageCard") {
-        //   obj = {
-        //     id: uuid,
-        //     type: this.curAddCardType,
-        //     img: "",
-        //     style: {
-        //       width: 250,
-        //       height: 200,
-        //     },
-        //   } as ImageCardInterface;
-        // }
+        if (typeof reader.result === "string") {
+          // 先確定資料庫的index都有建好
+          Promise.all([
+            checkAndInitializePureTextCardPromsie,
+            checkAndInitializeImageCardPromsie,
+          ]).then(() => {
+            if (typeof reader.result === "string") {
+              console.log(JSON.parse(reader.result));
+              const objArr = JSON.parse(reader.result);
+              const PureTextCardArr = objArr["PureTextCard"];
+              const ImageCardArr = objArr["ImageCard"];
+              PureTextCardArr.forEach((element: PureTextCardInterface) => {
+                axios({
+                  method: "put",
+                  baseURL: "/api",
+                  url: `puretextcard/_doc/${element.id}`,
+                  data: element,
+                  responseType: "json",
+                })
+                  .then((result) => {
+                    console.log(result);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              });
+              ImageCardArr.forEach((element: ImageCardInterface) => {
+                axios({
+                  method: "put",
+                  baseURL: "/api",
+                  url: `imagecard/_doc/${element.id}`,
+                  data: element,
+                  responseType: "json",
+                })
+                  .then((result) => {
+                    console.log(result);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              });
+            }
+          });
+        }
       };
       reader.readAsText(files[0]);
     },
