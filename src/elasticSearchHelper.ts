@@ -1,5 +1,5 @@
 import axios from "axios";
-import { PureTextCardMappings, ImageCardMappings } from "./card";
+import { PureTextCardSettings, ImageCardSettings } from "./card";
 
 export const checkAndInitializePureTextCardPromsie = axios({
   method: "head",
@@ -16,7 +16,7 @@ export const checkAndInitializePureTextCardPromsie = axios({
       method: "put",
       baseURL: "/api",
       url: "puretextcard/",
-      data: PureTextCardMappings,
+      data: PureTextCardSettings,
     }).then((result) => {
       console.log("PureTextCard建立index成功");
     });
@@ -37,7 +37,7 @@ export const checkAndInitializeImageCardPromsie = axios({
       method: "put",
       baseURL: "/api",
       url: "imagecard/",
-      data: ImageCardMappings,
+      data: ImageCardSettings,
     }).then((result) => {
       console.log("ImageCard建立index成功");
     });

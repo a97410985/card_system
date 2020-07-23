@@ -96,8 +96,8 @@ import {
   cardType,
   genralCardTpye,
   ImageCardInterface,
-  PureTextCardMappings,
-  ImageCardMappings,
+  PureTextCardSettings,
+  ImageCardSettings,
 } from "./card";
 
 import {

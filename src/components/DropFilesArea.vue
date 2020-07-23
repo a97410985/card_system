@@ -1,5 +1,5 @@
 <template>
-  <div style="border: gray dashed 1px" @drop="atDrop" @dragover="dragOver">
+  <div class="dropArea" @drop="atDrop" @dragover="dragOver">
     allow drop file
   </div>
 </template>
@@ -27,3 +27,11 @@ export default Vue.extend({
   },
 });
 </script>
+<style scoped>
+.dropArea {
+  border: gray dashed 1px;
+}
+.dropArea:-moz-drag-over {
+  border: blue, dashed 1px;
+}
+</style>

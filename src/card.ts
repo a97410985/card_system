@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 export const cardTypes = ["PureTextCard", "ImageCard"] as const;
 
 export type cardType = typeof cardTypes[number];
@@ -9,7 +10,23 @@ interface CardInterface {
   };
 }
 
-export const PureTextCardMappings = {
+export const PureTextCardSettings = {
+  settings: {
+    analysis: {
+      analyzer: {
+        my_hanlp_analyzer: {
+          tokenizer: "my_hanlp",
+        },
+      },
+      tokenizer: {
+        my_hanlp: {
+          type: "hanlp",
+          enable_stop_dictionary: true,
+          enable_custom_config: true,
+        },
+      },
+    },
+  },
   mappings: {
     properties: {
       id: {
@@ -35,7 +52,23 @@ export const PureTextCardMappings = {
   },
 };
 
-export const ImageCardMappings = {
+export const ImageCardSettings = {
+  settings: {
+    analysis: {
+      analyzer: {
+        my_hanlp_analyzer: {
+          tokenizer: "my_hanlp",
+        },
+      },
+      tokenizer: {
+        my_hanlp: {
+          type: "hanlp",
+          enable_stop_dictionary: true,
+          enable_custom_config: true,
+        },
+      },
+    },
+  },
   mappings: {
     properties: {
       id: {
