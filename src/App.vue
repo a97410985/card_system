@@ -62,6 +62,7 @@
           <component
             v-bind:is="card.type"
             @addCard="addCard"
+            @deleteCard="deleteCard"
             :index="index"
             :cardData="card"
             :addCardTF="addCardTF"
@@ -169,6 +170,9 @@ export default Vue.extend({
         this.cards.splice(value + offset, 0, obj);
       }
       this.addCardTF = false;
+    },
+    deleteCard(index: number) {
+      this.cards.splice(index, 1);
     },
     chooseCardType(typeName: cardType) {
       this.curAddCardType = typeName;

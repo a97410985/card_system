@@ -16,6 +16,9 @@
       <v-btn @click="zoomOut" icon small>
         <v-icon>zoom_out</v-icon>
       </v-btn>
+      <v-btn icon small>
+        <v-icon @click="deleteCard">delete</v-icon>
+      </v-btn>
     </v-card-actions>
     <slot></slot>
   </v-card>
@@ -88,6 +91,27 @@ export default Vue.extend({
         const newWidth = this.$el.clientWidth - 100;
         this.cardStyle.width = (this.$el.clientWidth - 100).toString() + "px";
         this.updateSize(newWidth, 200);
+      }
+    },
+    deleteCard() {
+      // 會刪除elasticSearch中的這張卡的document
+      axios({
+        method: "delete",
+        baseURL: "/api",
+        url: `/${this.cardData.type.toLowerCase()}/_doc/${this.cardData.id}`,
+        responseType: "json",
+      })
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      let vm = this.$parent;
+
+      while (vm) {
+        vm.$emit("deleteCard", this.index);
+        vm = vm.$parent;
       }
     },
   },
