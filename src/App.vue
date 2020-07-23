@@ -36,9 +36,7 @@
       >
       <v-menu open-on-hover top offset-y>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn v-bind="attrs" color="primary" dark v-on="on">
-            add card
-          </v-btn>
+          <v-btn v-bind="attrs" color="primary" dark v-on="on">add card</v-btn>
         </template>
 
         <v-list>
@@ -59,7 +57,7 @@
     </v-app-bar>
 
     <v-main>
-      <div class="d-flex flex-row">
+      <div class="d-flex flex-row custom-scroll-bar" style="overflow:auto">
         <div v-for="(card, index) in cards" v-bind:key="card.id" class="mx-6">
           <component
             v-bind:is="card.type"
@@ -359,3 +357,16 @@ export default Vue.extend({
   }),
 });
 </script>
+
+<style scoped>
+.custom-scroll-bar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scroll-bar::-webkit-scrollbar-thumb {
+  background-color: #123456;
+  border-radius: 10px;
+}
+.custom-scroll-bar::-webkit-scrollbar-thumb:hover {
+  background-color: #25517c;
+}
+</style>
