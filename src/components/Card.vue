@@ -27,6 +27,7 @@
 <script lang="ts">
 import Vue from "vue";
 import axios from "axios";
+import { cardTypes, cardType } from "../card";
 
 export default Vue.extend({
   props: ["cardData", "addCardTF", "index"],
@@ -84,13 +85,31 @@ export default Vue.extend({
     zoomIn() {
       const newWidth = this.$el.clientWidth + 100;
       this.cardStyle.width = newWidth.toString() + "px";
-      this.updateSize(newWidth, 200);
+      if (
+        this.cardData.type === "ImageCard" ||
+        this.cardData.type === "PureTextCard"
+      ) {
+        this.updateSize(newWidth, 200);
+      } else {
+        const newHeight = this.$el.clientHeight + 100;
+        this.cardStyle.height = newHeight.toString() + "px";
+        this.updateSize(newWidth, newHeight);
+      }
     },
     zoomOut() {
       if (this.$el.clientWidth > 200) {
         const newWidth = this.$el.clientWidth - 100;
         this.cardStyle.width = (this.$el.clientWidth - 100).toString() + "px";
-        this.updateSize(newWidth, 200);
+        if (
+          this.cardData.type === "imageCard" ||
+          this.cardData.type === "pureTextCard"
+        ) {
+          this.updateSize(newWidth, 200);
+        } else {
+          const newHeight = this.$el.clientHeight - 100;
+          this.cardStyle.height = newHeight.toString() + "px";
+          this.updateSize(newWidth, newHeight);
+        }
       }
     },
     deleteCard() {

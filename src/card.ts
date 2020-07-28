@@ -94,16 +94,34 @@ export const ImageCardSettings = {
   },
 };
 
+export interface CodeCardInterface extends CardInterface {
+  id: string;
+  type: cardType;
+  code: string;
+  style: {
+    width: number;
+    height: number;
+  };
+}
+
 export interface PureTextCardInterface extends CardInterface {
   id: string;
   type: cardType;
   text: string;
+  style: {
+    width: number;
+    height: number;
+  };
 }
 
 export interface ImageCardInterface extends CardInterface {
   id: string;
   type: cardType;
   img: string;
+  style: {
+    width: number;
+    height: number;
+  };
 }
 
 export type genralCardTpye = PureTextCardInterface | ImageCardInterface;
