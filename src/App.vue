@@ -86,6 +86,7 @@
 import Vue from "vue";
 import PureTextCard from "./components/PureTextCard.vue";
 import ImageCard from "./components/ImageCard.vue";
+import CodeCard from "./components/CodeCard.vue";
 import DropFilesArea from "./components/DropFilesArea.vue";
 
 import { v4 as uuidv4 } from "uuid";
@@ -114,6 +115,7 @@ export default Vue.extend({
     PureTextCard,
     ImageCard,
     DropFilesArea,
+    CodeCard,
   },
 
   methods: {
