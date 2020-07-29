@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-export const cardTypes = ["PureTextCard", "ImageCard"] as const;
+export const cardTypes = ["PureTextCard", "ImageCard", "CodeCard"] as const;
 
 export type cardType = typeof cardTypes[number];
 
@@ -88,8 +88,8 @@ export const ImageCardSettings = {
 };
 
 interface CardInterface {
-  type: cardType;
   id: string;
+  type: cardType;
   style: {
     width: number;
     height: number;
