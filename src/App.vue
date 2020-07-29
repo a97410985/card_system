@@ -99,11 +99,14 @@ import {
   ImageCardInterface,
   PureTextCardSettings,
   ImageCardSettings,
+  CodeCardInterface,
 } from "./card";
 
 import {
   checkAndInitializePureTextCardPromsie,
   checkAndInitializeImageCardPromsie,
+  checkAndInitializeCodeCardPromsie,
+  searchCardPromise,
 } from "./elasticSearchHelper";
 
 axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
@@ -131,27 +134,20 @@ export default Vue.extend({
       //   console.log(Response);
       // });
       const uuid: string = uuidv4();
-      let obj;
+      const obj = {
+        id: uuid,
+        type: this.curAddCardType,
+        style: {
+          width: 250,
+          height: 200,
+        },
+      } as genralCardTpye;
       if (this.curAddCardType === "PureTextCard") {
-        obj = {
-          id: uuid,
-          type: this.curAddCardType,
-          text: "",
-          style: {
-            width: 250,
-            height: 200,
-          },
-        } as PureTextCardInterface;
+        (obj as PureTextCardInterface).text = "";
       } else if (this.curAddCardType === "ImageCard") {
-        obj = {
-          id: uuid,
-          type: this.curAddCardType,
-          img: "",
-          style: {
-            width: 250,
-            height: 200,
-          },
-        } as ImageCardInterface;
+        (obj as ImageCardInterface).img = "";
+      } else if (this.curAddCardType === "CodeCard") {
+        (obj as CodeCardInterface).code = "";
       }
       alert("add card");
 
@@ -189,12 +185,15 @@ export default Vue.extend({
           Promise.all([
             checkAndInitializePureTextCardPromsie,
             checkAndInitializeImageCardPromsie,
+            checkAndInitializeCodeCardPromsie,
           ]).then(() => {
             if (typeof reader.result === "string") {
               console.log(JSON.parse(reader.result));
               const objArr = JSON.parse(reader.result);
               const PureTextCardArr = objArr["PureTextCard"];
               const ImageCardArr = objArr["ImageCard"];
+              const CodeCardArr = objArr["CodeCard"];
+
               PureTextCardArr.forEach((element: PureTextCardInterface) => {
                 axios({
                   method: "put",
@@ -225,6 +224,21 @@ export default Vue.extend({
                     console.log(err);
                   });
               });
+              CodeCardArr.forEach((element: CodeCardInterface) => {
+                axios({
+                  method: "put",
+                  baseURL: "/api",
+                  url: `codecard/_doc/${element.id}`,
+                  data: element,
+                  responseType: "json",
+                })
+                  .then((result) => {
+                    console.log(result);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              });
             }
           });
         }
@@ -232,69 +246,38 @@ export default Vue.extend({
       reader.readAsText(files[0]);
     },
     exportCards() {
-      console.log("exportCards");
-      const tempCardsObj: any = {};
-      // 到elasticSearch將所有卡片撈出來
-      axios({
-        method: "get",
-        baseURL: "/api",
-        url: "/puretextcard/_doc/_search",
-        responseType: "json",
-      })
-        .then((result) => {
-          console.log(result);
-          const cardsArr = result.data.hits.hits;
-          tempCardsObj["PureTextCard"] = [];
-          for (let i = 0; i < cardsArr.length; i++) {
-            console.log(cardsArr[i]._source.type);
-            const card: PureTextCardInterface = {
-              id: cardsArr[i]._source.id,
-              type: cardsArr[i]._source.type,
-              text: cardsArr[i]._source.text,
-              style: cardsArr[i]._source.style,
-            };
-            tempCardsObj["PureTextCard"].push(card);
-          }
+      Promise.all(
+        cardTypes.map((type) => {
+          return searchCardPromise(type);
         })
-        .catch((err) => {
-          console.log(err);
-        })
-        .then(() => {
-          axios({
-            method: "get",
-            baseURL: "/api",
-            url: "/imagecard/_doc/_search",
-            responseType: "json",
-          })
-            .then((result) => {
-              console.log(result);
-              const cardsArr = result.data.hits.hits;
-              tempCardsObj["ImageCard"] = [];
-
-              for (let i = 0; i < cardsArr.length; i++) {
-                const card: ImageCardInterface = {
-                  id: cardsArr[i]._source.id,
-                  type: cardsArr[i]._source.type,
-                  img: cardsArr[i]._source.img,
-                  style: cardsArr[i]._source.style,
-                };
-                tempCardsObj["ImageCard"].push(card);
-              }
-              console.log(tempCardsObj);
-              const blob = new Blob([JSON.stringify(tempCardsObj)], {
-                type: "application/json",
-              });
-              const a = document.createElement("a");
-              document.body.appendChild(a);
-              a.href = window.URL.createObjectURL(blob);
-              a.download = "export";
-              a.click();
-              a.remove();
-            })
-            .catch((err) => {
-              console.log(err);
+      ).then((values: any) => {
+        const tempCardsObj: {
+          PureTextCard: genralCardTpye[];
+          ImageCard: genralCardTpye[];
+          CodeCard: genralCardTpye[];
+        } = { PureTextCard: [], ImageCard: [], CodeCard: [] };
+        console.log(values);
+        for (let i = 0; i < cardTypes.length; i++) {
+          if (values[i]) {
+            values[i].data.hits.hits.forEach((element: any) => {
+              const card: genralCardTpye = element._source;
+              tempCardsObj[cardTypes[i]].push(card);
             });
+          }
+        }
+
+        console.log("tempCardsObj", tempCardsObj);
+        // 建立json檔案並下載
+        const blob = new Blob([JSON.stringify(tempCardsObj)], {
+          type: "application/json",
         });
+        const a = document.createElement("a");
+        document.body.appendChild(a);
+        a.href = window.URL.createObjectURL(blob);
+        a.download = "export";
+        a.click();
+        a.remove();
+      });
     },
   },
 
@@ -302,55 +285,25 @@ export default Vue.extend({
     Promise.all([
       checkAndInitializePureTextCardPromsie,
       checkAndInitializeImageCardPromsie,
+      checkAndInitializeCodeCardPromsie,
     ]).then((values) => {
       console.log(values);
-
-      axios({
-        method: "get",
-        baseURL: "/api",
-        url: "/puretextcard/_doc/_search",
-        responseType: "json",
-      })
-        .then((result) => {
-          console.log(result);
-          const cardsArr = result.data.hits.hits;
-          for (let i = 0; i < cardsArr.length; i++) {
-            console.log(cardsArr[i]._source.type);
-            const card: PureTextCardInterface = {
-              id: cardsArr[i]._source.id,
-              type: cardsArr[i]._source.type,
-              text: cardsArr[i]._source.text,
-              style: cardsArr[i]._source.style,
-            };
-            this.cards.push(card);
-          }
+      Promise.all(
+        cardTypes.map((type) => {
+          return searchCardPromise(type);
         })
-        .catch((err) => {
-          console.log(err);
-        });
-
-      axios({
-        method: "get",
-        baseURL: "/api",
-        url: "/imagecard/_doc/_search",
-        responseType: "json",
-      })
-        .then((result) => {
-          console.log(result);
-          const cardsArr = result.data.hits.hits;
-          for (let i = 0; i < cardsArr.length; i++) {
-            const card: ImageCardInterface = {
-              id: cardsArr[i]._source.id,
-              type: cardsArr[i]._source.type,
-              img: cardsArr[i]._source.img,
-              style: cardsArr[i]._source.style,
-            };
-            this.cards.push(card);
+      ).then((v: any) => {
+        console.log(v);
+        console.log(values);
+        for (let i = 0; i < cardTypes.length; i++) {
+          if (v[i]) {
+            v[i].data.hits.hits.forEach((element: any) => {
+              const card: genralCardTpye = element._source;
+              this.cards.push(card);
+            });
           }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+        }
+      });
     });
   },
 

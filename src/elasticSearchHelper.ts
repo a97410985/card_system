@@ -1,5 +1,10 @@
 import axios from "axios";
-import { PureTextCardSettings, ImageCardSettings } from "./card";
+import {
+  PureTextCardSettings,
+  ImageCardSettings,
+  CodeCardSettings,
+  cardType,
+} from "./card";
 
 export const checkAndInitializePureTextCardPromsie = axios({
   method: "head",
@@ -42,3 +47,61 @@ export const checkAndInitializeImageCardPromsie = axios({
       console.log("ImageCard建立index成功");
     });
   });
+
+export const checkAndInitializeCodeCardPromsie = axios({
+  method: "head",
+  baseURL: "/api",
+  url: "codecard/",
+})
+  .then((result) => {
+    console.log(result);
+  })
+  .catch((err) => {
+    console.log(err);
+    // 建立index與mappings
+    axios({
+      method: "put",
+      baseURL: "/api",
+      url: "codecard/",
+      data: CodeCardSettings,
+    }).then((result) => {
+      console.log("CodeCard建立index成功");
+    });
+  });
+
+export const searchCardPromise = (cardType: cardType, queryObj?: any) => {
+  if (queryObj) {
+    alert("searchCardPromise未完成");
+    // TODO: 帶有query的搜尋，會用post
+    return axios({
+      method: "post",
+      baseURL: "/api",
+      url: `/${cardType.toLocaleLowerCase()}/_doc/_search`,
+      responseType: "json",
+    })
+      .then((result) => {
+        console.log(result);
+        const cardsArr = result.data.hits.hits;
+        return result;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else {
+    // 用get method
+    return axios({
+      method: "get",
+      baseURL: "/api",
+      url: `/${cardType.toLocaleLowerCase()}/_doc/_search`,
+      responseType: "json",
+    })
+      .then((result) => {
+        console.log(result);
+        const cardsArr = result.data.hits.hits;
+        return result;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+};

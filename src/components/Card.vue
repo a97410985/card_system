@@ -31,6 +31,12 @@ import { cardTypes, cardType } from "../card";
 
 export default Vue.extend({
   props: ["cardData", "addCardTF", "index"],
+
+  created() {
+    if (this.cardData.type === "CodeCard") {
+      this.cardStyle.height = this.cardData.style.height + "px";
+    }
+  },
   data() {
     return {
       cardStyle: {
