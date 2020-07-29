@@ -10,7 +10,6 @@
 
 <script lang="ts">
 import Vue from "vue";
-import "ace-builds/webpack-resolver";
 import ace, { edit } from "ace-builds";
 import "ace-builds/webpack-resolver";
 import "ace-builds/src-noconflict/theme-twilight";
