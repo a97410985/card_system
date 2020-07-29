@@ -2,7 +2,7 @@
   <card :cardData="cardData" :addCardTF="addCardTF" :index="index">
     <div>
       <div>
-        <div id="editor">code card</div>
+        <div id="editor"></div>
       </div>
     </div>
   </card>
@@ -11,6 +11,7 @@
 <script lang="ts">
 import Vue from "vue";
 import ace, { edit } from "ace-builds";
+import "ace-builds/webpack-resolver";
 import "ace-builds/src-noconflict/theme-twilight";
 import "ace-builds/src-noconflict/mode-javascript";
 import Card from "./Card.vue";
