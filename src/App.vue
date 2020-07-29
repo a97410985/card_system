@@ -146,8 +146,10 @@ export default Vue.extend({
         (obj as PureTextCardInterface).text = "";
       } else if (this.curAddCardType === "ImageCard") {
         (obj as ImageCardInterface).img = "";
+        (obj as ImageCardInterface).description = "";
       } else if (this.curAddCardType === "CodeCard") {
         (obj as CodeCardInterface).code = "";
+        (obj as CodeCardInterface).description = "";
       }
       alert("add card");
 

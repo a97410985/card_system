@@ -13,7 +13,10 @@
     <v-card>
       <v-card-title>說明</v-card-title>
       <v-card-text>
-        <v-textarea counter="50" outlined></v-textarea>
+        <auto-upload-text-area
+          :cardData="cardData"
+          :updateObj="{ doc: { description: '' } }"
+        ></auto-upload-text-area>
       </v-card-text>
     </v-card>
   </v-menu>
@@ -21,8 +24,11 @@
 
 <script lang="ts">
 import Vue from "vue";
+import AutoUploadTextArea from "./AutoUploadTextArea.vue";
 export default Vue.extend({
   name: "HoverEditableDescription",
+  props: ["cardData"],
+  components: { AutoUploadTextArea },
   data() {
     return {
       menu: false,

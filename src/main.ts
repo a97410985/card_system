@@ -4,7 +4,7 @@ import Playground from "./CardPlayground.vue";
 import vuetify from "./plugins/vuetify";
 
 Vue.config.productionTip = false;
-const playgroundMode = true;
+const playgroundMode = false;
 
 if (playgroundMode) {
   new Vue({

@@ -70,6 +70,9 @@ export const ImageCardSettings = {
       type: {
         type: "keyword",
       },
+      description: {
+        type: "text",
+      },
       img: {
         type: "binary",
       },
@@ -110,11 +113,14 @@ export const CodeCardSettings = {
         type: "keyword",
       },
       type: {
-        type: "keyword",
+        type: "keyword", // exact match
       },
       code: {
         type: "text",
         index: false, // not quearyable
+      },
+      description: {
+        type: "text", // index ~ full-text-search
       },
       style: {
         properties: {
@@ -140,6 +146,7 @@ interface CardInterface {
 }
 export interface CodeCardInterface extends CardInterface {
   code: string;
+  description: string;
 }
 
 export interface PureTextCardInterface extends CardInterface {
@@ -148,6 +155,7 @@ export interface PureTextCardInterface extends CardInterface {
 
 export interface ImageCardInterface extends CardInterface {
   img: string;
+  description: string;
 }
 
 export type genralCardTpye =

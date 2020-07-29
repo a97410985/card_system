@@ -21,6 +21,7 @@
       </v-btn>
       <v-spacer></v-spacer>
       <hover-editable-description
+        :cardData="cardData"
         v-if="cardData.type !== 'PureTextCard'"
       ></hover-editable-description>
     </v-card-actions>
