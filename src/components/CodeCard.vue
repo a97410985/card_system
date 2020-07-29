@@ -1,6 +1,10 @@
 <template>
   <card :cardData="cardData" :addCardTF="addCardTF" :index="index">
-    <div id="editor">code card</div>
+    <div>
+      <div>
+        <div id="editor">code card</div>
+      </div>
+    </div>
   </card>
 </template>
 
@@ -10,6 +14,7 @@ import ace, { edit } from "ace-builds";
 import "ace-builds/src-noconflict/theme-twilight";
 import "ace-builds/src-noconflict/mode-javascript";
 import Card from "./Card.vue";
+
 export default Vue.extend({
   name: "CodeCard",
   components: { Card },
@@ -28,7 +33,7 @@ export default Vue.extend({
 <style scoped>
 #editor {
   position: absolute;
-  width: 100%;
   height: 100%;
+  width: 100%;
 }
 </style>

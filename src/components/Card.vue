@@ -19,6 +19,10 @@
       <v-btn icon small>
         <v-icon @click="deleteCard">delete</v-icon>
       </v-btn>
+      <v-spacer></v-spacer>
+      <hover-editable-description
+        v-if="cardData.type !== 'PureTextCard'"
+      ></hover-editable-description>
     </v-card-actions>
     <slot></slot>
   </v-card>
@@ -28,9 +32,12 @@
 import Vue from "vue";
 import axios from "axios";
 import { cardTypes, cardType } from "../card";
+import HoverEditableDescription from "./HoverEditableDescription.vue";
 
 export default Vue.extend({
   props: ["cardData", "addCardTF", "index"],
+
+  components: { HoverEditableDescription },
 
   created() {
     if (this.cardData.type === "CodeCard") {
