@@ -1,20 +1,27 @@
 <template>
   <card :cardData="cardData" :addCardTF="addCardTF" :index="index">
-    <div
-      style=" margin: 10px; min-width:200px; min-height:200px; display: flex;"
-    >
-      <drop-files-area
-        v-if="imgSrc === 'data:image/png;base64, '"
-        style="flex-grow: 1; margin-bottom:10px"
-        @DropDownGetFiles="handleDropFiles"
-      ></drop-files-area>
-      <img
-        v-else
-        style="width: 100%; height: auto;"
-        :src="imgSrc"
-        alt="haha no image"
-      />
-    </div>
+    <template v-slot:top-right-bar>
+      <hover-editable-description
+        :cardData="cardData"
+      ></hover-editable-description>
+    </template>
+    <template v-slot:content>
+      <div
+        style=" margin: 10px; min-width:200px; min-height:200px; display: flex;"
+      >
+        <drop-files-area
+          v-if="imgSrc === 'data:image/png;base64, '"
+          style="flex-grow: 1; margin-bottom:10px"
+          @DropDownGetFiles="handleDropFiles"
+        ></drop-files-area>
+        <img
+          v-else
+          style="width: 100%; height: auto;"
+          :src="imgSrc"
+          alt="haha no image"
+        />
+      </div>
+    </template>
   </card>
 </template>
 
@@ -22,11 +29,12 @@
 import Vue from "vue";
 import Card from "./Card.vue";
 import DropFilesArea from "./DropFilesArea.vue";
+import HoverEditableDescription from "./HoverEditableDescription.vue";
 import axios from "axios";
 
 export default Vue.extend({
   name: "ImageCard",
-  components: { Card, DropFilesArea },
+  components: { Card, DropFilesArea, HoverEditableDescription },
 
   props: ["cardData", "index", "addCardTF"],
 

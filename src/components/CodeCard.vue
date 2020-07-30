@@ -1,10 +1,17 @@
 <template>
   <card :cardData="cardData" :addCardTF="addCardTF" :index="index">
-    <div>
+    <template v-slot:top-right-bar>
+      <hover-editable-description
+        :cardData="cardData"
+      ></hover-editable-description>
+    </template>
+    <template v-slot:content>
       <div>
-        <div id="editor"></div>
+        <div>
+          <div id="editor"></div>
+        </div>
       </div>
-    </div>
+    </template>
   </card>
 </template>
 
@@ -14,12 +21,15 @@ import ace, { edit } from "ace-builds";
 import "ace-builds/webpack-resolver";
 import "ace-builds/src-noconflict/theme-twilight";
 import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/mode-c_cpp";
+import "ace-builds/src-noconflict/mode-typescript";
 import Card from "./Card.vue";
+import HoverEditableDescription from "./HoverEditableDescription.vue";
 import { updateCardSingleField } from "../elasticSearchHelper";
 
 export default Vue.extend({
   name: "CodeCard",
-  components: { Card },
+  components: { Card, HoverEditableDescription },
   props: ["cardData", "index", "addCardTF"],
   mounted() {
     const editor = ace.edit("editor");

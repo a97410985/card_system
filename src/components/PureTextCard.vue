@@ -1,11 +1,13 @@
 <template>
   <card :cardData="cardData" :addCardTF="addCardTF" :index="index">
-    <auto-upload-text-area
-      style="margin: 10px"
-      :cardData="cardData"
-      :updateObj="{ doc: { text: '' } }"
-      textField="text"
-    ></auto-upload-text-area>
+    <template v-slot:content>
+      <auto-upload-text-area
+        style="margin: 10px"
+        :cardData="cardData"
+        :updateObj="{ doc: { text: '' } }"
+        textField="text"
+      ></auto-upload-text-area>
+    </template>
   </card>
 </template>
 
