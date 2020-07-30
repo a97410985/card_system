@@ -11,10 +11,10 @@ export default Vue.extend({
   data() {
     return {
       idArr: [] as number[],
-      textContent: this.cardData.description as string,
+      textContent: this.cardData[this.textField] as string,
     };
   },
-  props: ["cardData", "updateObj"],
+  props: ["cardData", "updateObj", "textField"],
   methods: {
     updateText() {
       this.idArr.forEach((id) => {
@@ -23,9 +23,7 @@ export default Vue.extend({
       this.idArr = [];
       const id = setTimeout(() => {
         // 更新資料到elasticSearch
-        this.updateObj.doc[
-          Object.keys(this.updateObj.doc)[0]
-        ] = this.textContent;
+        this.updateObj.doc[this.textField] = this.textContent;
         axios({
           method: "post",
           baseURL: "/api",

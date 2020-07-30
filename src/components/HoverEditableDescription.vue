@@ -16,6 +16,7 @@
         <auto-upload-text-area
           :cardData="cardData"
           :updateObj="{ doc: { description: '' } }"
+          :textField="textField"
         ></auto-upload-text-area>
       </v-card-text>
     </v-card>
@@ -25,6 +26,7 @@
 <script lang="ts">
 import Vue from "vue";
 import AutoUploadTextArea from "./AutoUploadTextArea.vue";
+import { cardType } from "../card";
 export default Vue.extend({
   name: "HoverEditableDescription",
   props: ["cardData"],
@@ -33,6 +35,15 @@ export default Vue.extend({
     return {
       menu: false,
     };
+  },
+  computed: {
+    textField() {
+      if ((this.cardData.type as cardType) !== "PureTextCard") {
+        return "description";
+      } else {
+        return "text";
+      }
+    },
   },
 });
 </script>
