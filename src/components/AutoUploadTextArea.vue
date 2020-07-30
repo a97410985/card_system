@@ -5,6 +5,8 @@
 <script lang="ts">
 import Vue from "vue";
 import axios from "axios";
+import { updateCardSingleField } from "../elasticSearchHelper";
+import { cardTypes, genralCardInterface } from "../card";
 
 export default Vue.extend({
   name: "AutoUploadTextArea",
@@ -14,6 +16,7 @@ export default Vue.extend({
       textContent: this.cardData[this.textField] as string,
     };
   },
+  // updataObj是要傳部分要更新的資料{doc:{xxx:""}} ; textField是要更新欄位的名稱
   props: ["cardData", "updateObj", "textField"],
   methods: {
     updateText() {
@@ -24,21 +27,11 @@ export default Vue.extend({
       const id = setTimeout(() => {
         // 更新資料到elasticSearch
         this.updateObj.doc[this.textField] = this.textContent;
-        axios({
-          method: "post",
-          baseURL: "/api",
-          url: `/${this.cardData.type.toLowerCase()}/_doc/${
-            this.cardData.id
-          }/_update`,
-          data: this.updateObj,
-          responseType: "json",
-        })
-          .then((result) => {
-            console.log(result);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        updateCardSingleField(
+          this.cardData.type,
+          this.cardData.id,
+          this.updateObj
+        );
 
         console.log(this.textContent);
         this.idArr.forEach((id) => {

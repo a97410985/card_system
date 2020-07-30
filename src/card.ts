@@ -158,7 +158,7 @@ export interface ImageCardInterface extends CardInterface {
   description: string;
 }
 
-export type genralCardTpye =
+export type genralCardInterface =
   | PureTextCardInterface
   | ImageCardInterface
   | CodeCardInterface;

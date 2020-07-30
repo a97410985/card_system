@@ -95,7 +95,7 @@ import {
   PureTextCardInterface,
   cardTypes,
   cardType,
-  genralCardTpye,
+  genralCardInterface,
   ImageCardInterface,
   PureTextCardSettings,
   ImageCardSettings,
@@ -141,7 +141,7 @@ export default Vue.extend({
           width: 250,
           height: 200,
         },
-      } as genralCardTpye;
+      } as genralCardInterface;
       if (this.curAddCardType === "PureTextCard") {
         (obj as PureTextCardInterface).text = "";
       } else if (this.curAddCardType === "ImageCard") {
@@ -254,15 +254,15 @@ export default Vue.extend({
         })
       ).then((values: any) => {
         const tempCardsObj: {
-          PureTextCard: genralCardTpye[];
-          ImageCard: genralCardTpye[];
-          CodeCard: genralCardTpye[];
+          PureTextCard: genralCardInterface[];
+          ImageCard: genralCardInterface[];
+          CodeCard: genralCardInterface[];
         } = { PureTextCard: [], ImageCard: [], CodeCard: [] };
         console.log(values);
         for (let i = 0; i < cardTypes.length; i++) {
           if (values[i]) {
             values[i].data.hits.hits.forEach((element: any) => {
-              const card: genralCardTpye = element._source;
+              const card: genralCardInterface = element._source;
               tempCardsObj[cardTypes[i]].push(card);
             });
           }
@@ -300,7 +300,7 @@ export default Vue.extend({
         for (let i = 0; i < cardTypes.length; i++) {
           if (v[i]) {
             v[i].data.hits.hits.forEach((element: any) => {
-              const card: genralCardTpye = element._source;
+              const card: genralCardInterface = element._source;
               this.cards.push(card);
             });
           }
@@ -312,7 +312,7 @@ export default Vue.extend({
   data: () => ({
     addCardTF: false,
     curAddCardType: "PureTextCard" as cardType,
-    cards: [] as genralCardTpye[],
+    cards: [] as genralCardInterface[],
     cardTypes: cardTypes,
     dropImportJsonDialog: false,
   }),

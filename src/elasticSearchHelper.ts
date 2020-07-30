@@ -69,6 +69,26 @@ export const checkAndInitializeCodeCardPromsie = axios({
     });
   });
 
+export const updateCardSingleField = (
+  cardType: cardType,
+  cardID: string,
+  updateObj: { doc: { [key: string]: string } }
+) => {
+  axios({
+    method: "post",
+    baseURL: "/api",
+    url: `/${cardType.toLowerCase()}/_doc/${cardID}/_update`,
+    data: updateObj,
+    responseType: "json",
+  })
+    .then((result) => {
+      console.log(result);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
 export const searchCardPromise = (cardType: cardType, queryObj?: any) => {
   if (queryObj) {
     alert("searchCardPromise未完成");
