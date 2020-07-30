@@ -40,6 +40,7 @@ export default Vue.extend({
 
   data() {
     return {
+      settingMenu: false,
       editTF: true,
       imgSrc: "data:image/png;base64, " + this.cardData.img,
     };

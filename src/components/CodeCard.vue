@@ -1,6 +1,25 @@
 <template>
   <card :cardData="cardData" :addCardTF="addCardTF" :index="index">
     <template v-slot:top-right-bar>
+      <v-menu v-model="settingMenu" :close-on-content-click="false">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn color="indigo" dark v-bind="attrs" v-on="on" icon small>
+            <v-icon>settings</v-icon>
+          </v-btn>
+        </template>
+        <v-card>
+          <v-card-title>設定</v-card-title>
+          <v-card-text>
+            <v-autocomplete
+              :items="programmingLanguageArr"
+              label="progrmming language"
+              v-model="selectProgrammingLanguage"
+              @change="setProgrammingLanguage"
+            >
+            </v-autocomplete>
+          </v-card-text>
+        </v-card>
+      </v-menu>
       <hover-editable-description
         :cardData="cardData"
       ></hover-editable-description>
@@ -23,6 +42,7 @@ import "ace-builds/src-noconflict/theme-twilight";
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/mode-c_cpp";
 import "ace-builds/src-noconflict/mode-typescript";
+import "ace-builds/src-noconflict/mode-json";
 import Card from "./Card.vue";
 import HoverEditableDescription from "./HoverEditableDescription.vue";
 import { updateCardSingleField } from "../elasticSearchHelper";
@@ -33,6 +53,7 @@ export default Vue.extend({
   props: ["cardData", "index", "addCardTF"],
   mounted() {
     const editor = ace.edit("editor");
+    this.editor = editor;
     editor.setTheme("ace/theme/twilight");
     editor.getSession().setMode("ace/mode/javascript");
     editor.setValue(this.cardData.code);
@@ -56,9 +77,23 @@ export default Vue.extend({
     });
   },
   data() {
-    return { idArr: [] as number[] };
+    return {
+      editor: null as ace.Ace.Editor | null,
+      settingMenu: false,
+      selectProgrammingLanguage: "javascript",
+      idArr: [] as number[],
+      programmingLanguageArr: ["c_cpp", "typescript", "javascript", "json"],
+    };
   },
-  methods: {},
+  methods: {
+    setProgrammingLanguage() {
+      if (this.editor) {
+        this.editor.session.setMode(
+          "ace/mode/" + this.selectProgrammingLanguage
+        );
+      }
+    },
+  },
 });
 </script>
 <style scoped>
