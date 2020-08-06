@@ -116,8 +116,8 @@ export default Vue.extend({
         const newWidth = this.$el.clientWidth - 100;
         this.cardStyle.width = (this.$el.clientWidth - 100).toString() + "px";
         if (
-          this.cardData.type === "imageCard" ||
-          this.cardData.type === "pureTextCard"
+          this.cardData.type === "ImageCard" ||
+          this.cardData.type === "PureTextCard"
         ) {
           this.updateSize(newWidth, 200);
         } else {

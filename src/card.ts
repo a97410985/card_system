@@ -30,6 +30,7 @@ export const PureTextCardSettings = {
       },
       text: {
         type: "text",
+        analyzer: "my_hanlp_analyzer",
       },
       style: {
         properties: {
@@ -72,6 +73,7 @@ export const ImageCardSettings = {
       },
       description: {
         type: "text",
+        analyzer: "my_hanlp_analyzer",
       },
       img: {
         type: "binary",
@@ -121,6 +123,7 @@ export const CodeCardSettings = {
       },
       description: {
         type: "text", // index ~ full-text-search
+        analyzer: "my_hanlp_analyzer",
       },
       style: {
         properties: {
