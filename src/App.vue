@@ -4,6 +4,13 @@
       <div class="d-flex align-center">stone card system</div>
 
       <v-spacer></v-spacer>
+      <v-text-field
+        label="搜尋卡片"
+        hide-details="auto"
+        prepend-icon="search"
+        v-model="searchText"
+        @input="updateSearch"
+      ></v-text-field>
 
       <v-menu open-on-hover top offset-y>
         <template v-slot:activator="{ on, attrs }">
@@ -67,6 +74,15 @@
             :cardData="card"
             :addCardTF="addCardTF"
           />
+        </div>
+      </div>
+      <div class="d-flex flex-row custom-scroll-bar" style="overflow:auto">
+        <div
+          v-for="(card, index) in filteredCards"
+          v-bind:key="card.id"
+          class="mx-6"
+        >
+          <component v-bind:is="card.type" :index="index" :cardData="card" />
         </div>
       </div>
     </v-main>
@@ -281,6 +297,45 @@ export default Vue.extend({
         a.remove();
       });
     },
+    updateSearch() {
+      console.log("updateSearch");
+      // TODO: 換掉這種ugly的處理方式
+      this.idArr.forEach((id) => {
+        clearTimeout(id);
+      });
+      this.idArr = [];
+      const id = setTimeout(() => {
+        axios({
+          method: "post",
+          baseURL: "/api",
+          url: "puretextcard/_search",
+          data: {
+            query: {
+              match: {
+                text: this.searchText,
+              },
+            },
+          },
+          responseType: "json",
+        })
+          .then((result) => {
+            console.log(result);
+            this.filteredCards = [];
+            result.data.hits.hits.forEach((element: any) => {
+              const card: genralCardInterface = element._source;
+              this.filteredCards.push(card);
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        this.idArr.forEach((id) => {
+          clearTimeout(id);
+        });
+        this.idArr = [];
+      }, 1500);
+      this.idArr.push(id);
+    },
   },
 
   created() {
@@ -315,6 +370,9 @@ export default Vue.extend({
     cards: [] as genralCardInterface[],
     cardTypes: cardTypes,
     dropImportJsonDialog: false,
+    filteredCards: [] as genralCardInterface[],
+    searchText: "",
+    idArr: [] as number[],
   }),
 });
 </script>
