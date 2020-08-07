@@ -19,6 +19,9 @@
       <v-btn icon small>
         <v-icon @click="deleteCard">delete</v-icon>
       </v-btn>
+      <v-btn icon small>
+        <v-icon @click="closeCard">cancel</v-icon>
+      </v-btn>
       <v-spacer></v-spacer>
       <slot name="top-right-bar"></slot>
       <!-- <hover-editable-description
@@ -145,6 +148,14 @@ export default Vue.extend({
 
       while (vm) {
         vm.$emit("deleteCard", this.index, this.containerName);
+        vm = vm.$parent;
+      }
+    },
+    closeCard() {
+      let vm = this.$parent;
+
+      while (vm) {
+        vm.$emit("closeCard", this.index, vm);
         vm = vm.$parent;
       }
     },
