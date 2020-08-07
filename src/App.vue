@@ -305,30 +305,28 @@ export default Vue.extend({
       });
       this.idArr = [];
       const id = setTimeout(() => {
-        axios({
-          method: "post",
-          baseURL: "/api",
-          url: "puretextcard/_search",
-          data: {
-            query: {
-              match: {
-                text: this.searchText,
-              },
-            },
-          },
-          responseType: "json",
-        })
-          .then((result) => {
-            console.log(result);
-            this.filteredCards = [];
-            result.data.hits.hits.forEach((element: any) => {
-              const card: genralCardInterface = element._source;
-              this.filteredCards.push(card);
+        Promise.all(
+          cardTypes.map((type) => {
+            if (type !== "PureTextCard") {
+              return searchCardPromise(type, {
+                match: { description: this.searchText },
+              });
+            }
+            return searchCardPromise(type, {
+              match: { text: this.searchText },
             });
           })
-          .catch((err) => {
-            console.log(err);
+        ).then((result) => {
+          console.log(result);
+          this.filteredCards = [];
+          result.forEach((r) => {
+            if (r)
+              r.data.hits.hits.forEach((element: any) => {
+                const card: genralCardInterface = element._source;
+                this.filteredCards.push(card);
+              });
           });
+        });
         this.idArr.forEach((id) => {
           clearTimeout(id);
         });

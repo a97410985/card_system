@@ -91,12 +91,12 @@ export const updateCardSingleField = (
 
 export const searchCardPromise = (cardType: cardType, queryObj?: any) => {
   if (queryObj) {
-    alert("searchCardPromise未完成");
     // TODO: 帶有query的搜尋，會用post
     return axios({
       method: "post",
       baseURL: "/api",
-      url: `/${cardType.toLocaleLowerCase()}/_doc/_search`,
+      url: `/${cardType.toLocaleLowerCase()}/_search`,
+      data: { query: queryObj },
       responseType: "json",
     })
       .then((result) => {

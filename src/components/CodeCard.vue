@@ -27,7 +27,7 @@
     <template v-slot:content>
       <div>
         <div>
-          <div id="editor"></div>
+          <div :id="editorID" class="editor"></div>
         </div>
       </div>
     </template>
@@ -46,13 +46,14 @@ import "ace-builds/src-noconflict/mode-json";
 import Card from "./Card.vue";
 import HoverEditableDescription from "./HoverEditableDescription.vue";
 import { updateCardSingleField } from "../elasticSearchHelper";
+import { v4 as uuidv4 } from "uuid";
 
 export default Vue.extend({
   name: "CodeCard",
   components: { Card, HoverEditableDescription },
   props: ["cardData", "index", "addCardTF"],
   mounted() {
-    const editor = ace.edit("editor");
+    const editor = ace.edit(this.editorID);
     this.editor = editor;
     editor.setTheme("ace/theme/twilight");
     editor.getSession().setMode("ace/mode/javascript");
@@ -79,6 +80,7 @@ export default Vue.extend({
   data() {
     return {
       editor: null as ace.Ace.Editor | null,
+      editorID: uuidv4(),
       settingMenu: false,
       selectProgrammingLanguage: "javascript",
       idArr: [] as number[],
@@ -97,7 +99,7 @@ export default Vue.extend({
 });
 </script>
 <style scoped>
-#editor {
+.editor {
   position: absolute;
   height: 100%;
   width: 100%;
