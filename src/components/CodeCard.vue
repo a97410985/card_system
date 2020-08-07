@@ -1,5 +1,10 @@
 <template>
-  <card :cardData="cardData" :addCardTF="addCardTF" :index="index">
+  <card
+    :cardData="cardData"
+    :addCardTF="addCardTF"
+    :index="index"
+    :containerName="containerName"
+  >
     <template v-slot:top-right-bar>
       <v-menu v-model="settingMenu" :close-on-content-click="false">
         <template v-slot:activator="{ on, attrs }">
@@ -51,7 +56,7 @@ import { v4 as uuidv4 } from "uuid";
 export default Vue.extend({
   name: "CodeCard",
   components: { Card, HoverEditableDescription },
-  props: ["cardData", "index", "addCardTF"],
+  props: ["cardData", "index", "addCardTF", "containerName"],
   mounted() {
     const editor = ace.edit(this.editorID);
     this.editor = editor;

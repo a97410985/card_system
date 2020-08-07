@@ -1,5 +1,10 @@
 <template>
-  <card :cardData="cardData" :addCardTF="addCardTF" :index="index">
+  <card
+    :cardData="cardData"
+    :addCardTF="addCardTF"
+    :index="index"
+    :containerName="containerName"
+  >
     <template v-slot:content>
       <auto-upload-text-area
         style="margin: 10px"
@@ -21,7 +26,7 @@ export default Vue.extend({
   name: "PureTextCard",
 
   components: { Card, AutoUploadTextArea },
-  props: ["cardData", "index", "addCardTF"],
+  props: ["cardData", "index", "addCardTF", "containerName"],
 
   data() {
     return { textContent: this.cardData.text, editTF: true };

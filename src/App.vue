@@ -4,13 +4,6 @@
       <div class="d-flex align-center">stone card system</div>
 
       <v-spacer></v-spacer>
-      <v-text-field
-        label="搜尋卡片"
-        hide-details="auto"
-        prepend-icon="search"
-        v-model="searchText"
-        @input="updateSearch"
-      ></v-text-field>
 
       <v-menu open-on-hover top offset-y>
         <template v-slot:activator="{ on, attrs }">
@@ -64,27 +57,70 @@
     </v-app-bar>
 
     <v-main>
-      <div class="d-flex flex-row custom-scroll-bar" style="overflow:auto">
-        <div v-for="(card, index) in cards" v-bind:key="card.id" class="mx-6">
-          <component
-            v-bind:is="card.type"
-            @addCard="addCard"
-            @deleteCard="deleteCard"
-            :index="index"
-            :cardData="card"
-            :addCardTF="addCardTF"
-          />
-        </div>
-      </div>
-      <div class="d-flex flex-row custom-scroll-bar" style="overflow:auto">
-        <div
-          v-for="(card, index) in filteredCards"
-          v-bind:key="card.id"
-          class="mx-6"
-        >
-          <component v-bind:is="card.type" :index="index" :cardData="card" />
-        </div>
-      </div>
+      <v-row style="height:50%">
+        <v-card>
+          <div
+            id="allcardsContainer"
+            @mousewheel="horizontalMouseScroll"
+            class="d-flex flex-row custom-scroll-bar card-container"
+            style="overflow:auto"
+          >
+            <div
+              v-for="(card, index) in cards"
+              v-bind:key="card.id"
+              class="mx-6"
+            >
+              <component
+                v-bind:is="card.type"
+                @addCard="addCard"
+                @deleteCard="deleteCard"
+                containerName="allcardsContainer"
+                :index="index"
+                :cardData="card"
+                :addCardTF="addCardTF"
+              />
+            </div></div
+        ></v-card>
+      </v-row>
+      <v-row>
+        <v-col cols="6">
+          <v-card>
+            <v-text-field
+              label="搜尋卡片"
+              hide-details="auto"
+              prepend-icon="search"
+              v-model="searchText"
+              @input="updateSearch"
+              style="margin:10px"
+            ></v-text-field>
+
+            <div
+              class="d-flex flex-row custom-scroll-bar  card-container"
+              style="overflow:auto"
+              @mousewheel="horizontalMouseScroll"
+            >
+              <div
+                v-for="(card, index) in filteredCards"
+                v-bind:key="card.id"
+                class="mx-6"
+              >
+                <component
+                  v-bind:is="card.type"
+                  containerName="searchContainer"
+                  :index="index"
+                  :cardData="card"
+                  @deleteCard="deleteCard"
+                />
+              </div>
+            </div>
+          </v-card>
+        </v-col>
+        <v-col cols="6">
+          <v-card>
+            <v-card-title>固定卡片容器</v-card-title>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-main>
     <v-dialog v-model="dropImportJsonDialog" width="300">
       <v-card>
@@ -187,8 +223,12 @@ export default Vue.extend({
       }
       this.addCardTF = false;
     },
-    deleteCard(index: number) {
-      this.cards.splice(index, 1);
+    deleteCard(index: number, containerName: string) {
+      if (containerName === "allcardsContainer") {
+        this.cards.splice(index, 1);
+      } else if (containerName === "searchContainer") {
+        this.filteredCards.splice(index, 1);
+      }
     },
     chooseCardType(typeName: cardType) {
       this.curAddCardType = typeName;
@@ -297,6 +337,18 @@ export default Vue.extend({
         a.remove();
       });
     },
+    // 使用此函數需要替有scroll bar的DOM element加上card-container這個class
+    horizontalMouseScroll(event: WheelEvent | any) {
+      event.stopPropagation();
+      event.preventDefault();
+      for (let i = 0; i < event.path.length; i++) {
+        if (event.path[i].classList.contains("card-container")) {
+          const containerDOM = event.path[i];
+          containerDOM.scrollLeft += event.deltaY;
+          break;
+        }
+      }
+    },
     updateSearch() {
       console.log("updateSearch");
       // TODO: 換掉這種ugly的處理方式
@@ -337,29 +389,30 @@ export default Vue.extend({
   },
 
   created() {
-    Promise.all([
-      checkAndInitializePureTextCardPromsie,
-      checkAndInitializeImageCardPromsie,
-      checkAndInitializeCodeCardPromsie,
-    ]).then((values) => {
-      console.log(values);
-      Promise.all(
-        cardTypes.map((type) => {
-          return searchCardPromise(type);
-        })
-      ).then((v: any) => {
-        console.log(v);
-        console.log(values);
-        for (let i = 0; i < cardTypes.length; i++) {
-          if (v[i]) {
-            v[i].data.hits.hits.forEach((element: any) => {
-              const card: genralCardInterface = element._source;
-              this.cards.push(card);
-            });
-          }
-        }
-      });
-    });
+    // 載入所有的卡片
+    // Promise.all([
+    //   checkAndInitializePureTextCardPromsie,
+    //   checkAndInitializeImageCardPromsie,
+    //   checkAndInitializeCodeCardPromsie,
+    // ]).then((values) => {
+    //   console.log(values);
+    //   Promise.all(
+    //     cardTypes.map((type) => {
+    //       return searchCardPromise(type);
+    //     })
+    //   ).then((v: any) => {
+    //     console.log(v);
+    //     console.log(values);
+    //     for (let i = 0; i < cardTypes.length; i++) {
+    //       if (v[i]) {
+    //         v[i].data.hits.hits.forEach((element: any) => {
+    //           const card: genralCardInterface = element._source;
+    //           this.cards.push(card);
+    //         });
+    //       }
+    //     }
+    //   });
+    // });
   },
 
   data: () => ({

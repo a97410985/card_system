@@ -1,5 +1,10 @@
 <template>
-  <card :cardData="cardData" :addCardTF="addCardTF" :index="index">
+  <card
+    :cardData="cardData"
+    :addCardTF="addCardTF"
+    :index="index"
+    :containerName="containerName"
+  >
     <template v-slot:top-right-bar>
       <hover-editable-description
         :cardData="cardData"
@@ -36,7 +41,7 @@ export default Vue.extend({
   name: "ImageCard",
   components: { Card, DropFilesArea, HoverEditableDescription },
 
-  props: ["cardData", "index", "addCardTF"],
+  props: ["cardData", "index", "addCardTF", "containerName"],
 
   data() {
     return {

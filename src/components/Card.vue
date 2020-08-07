@@ -37,7 +37,7 @@ import { cardTypes, cardType } from "../card";
 
 export default Vue.extend({
   name: "Card",
-  props: ["cardData", "addCardTF", "index"],
+  props: ["cardData", "addCardTF", "index", "containerName"],
 
   components: {},
 
@@ -144,7 +144,7 @@ export default Vue.extend({
       let vm = this.$parent;
 
       while (vm) {
-        vm.$emit("deleteCard", this.index);
+        vm.$emit("deleteCard", this.index, this.containerName);
         vm = vm.$parent;
       }
     },
