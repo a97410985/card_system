@@ -1,7 +1,7 @@
 <template>
   <card
     :cardData="cardData"
-    :addCardTF="addCardTF"
+    :addCardType="addCardType"
     :index="index"
     :containerName="containerName"
   >
@@ -56,7 +56,7 @@ import { v4 as uuidv4 } from "uuid";
 export default Vue.extend({
   name: "CodeCard",
   components: { Card, HoverEditableDescription },
-  props: ["cardData", "index", "addCardTF", "containerName"],
+  props: ["cardData", "index", "addCardType", "containerName"],
   mounted() {
     const editor = ace.edit(this.editorID);
     this.editor = editor;

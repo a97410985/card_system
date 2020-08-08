@@ -112,7 +112,7 @@ export const searchCardPromise = (cardType: cardType, queryObj?: any) => {
     return axios({
       method: "get",
       baseURL: "/api",
-      url: `/${cardType.toLocaleLowerCase()}/_doc/_search`,
+      url: `/${cardType.toLocaleLowerCase()}/_doc/_search?size=50`,
       responseType: "json",
     })
       .then((result) => {

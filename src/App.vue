@@ -4,7 +4,13 @@
       <div class="d-flex align-center">stone card system</div>
 
       <v-spacer></v-spacer>
-
+      <v-btn
+        class="error"
+        v-if="moveCardTempData"
+        @click="moveCardTempData = null"
+      >
+        cancel move card
+      </v-btn>
       <v-menu open-on-hover top offset-y>
         <template v-slot:activator="{ on, attrs }">
           <v-btn v-bind="attrs" v-on="on" icon>
@@ -25,18 +31,21 @@
       </v-menu>
     </v-app-bar>
 
-    <v-main>
+    <v-main @moveCard="moveCard" @moveCardEnd="moveCardEnd">
       <v-row>
         <v-col>
-          <card-container> </card-container>
+          <card-container :moveCardTempData="moveCardTempData">
+          </card-container>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="6">
-          <card-container> </card-container>
+          <card-container :moveCardTempData="moveCardTempData">
+          </card-container>
         </v-col>
         <v-col cols="6">
-          <card-container> </card-container>
+          <card-container :moveCardTempData="moveCardTempData">
+          </card-container>
         </v-col>
       </v-row>
     </v-main>
@@ -84,6 +93,14 @@ export default Vue.extend({
   },
 
   methods: {
+    moveCardEnd() {
+      this.moveCardTempData = null;
+    },
+    moveCard(cardData: genralCardInterface) {
+      console.log("app component get moveCard signal");
+      console.log(cardData);
+      this.moveCardTempData = cardData;
+    },
     handleImoprtJson(files: FileList) {
       console.log("handleImoprtJson");
       console.log(files);
@@ -193,6 +210,7 @@ export default Vue.extend({
   data: () => ({
     cardTypes: cardTypes,
     dropImportJsonDialog: false,
+    moveCardTempData: null as genralCardInterface | null,
   }),
 });
 </script>

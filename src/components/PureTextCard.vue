@@ -1,7 +1,7 @@
 <template>
   <card
     :cardData="cardData"
-    :addCardTF="addCardTF"
+    :addCardType="addCardType"
     :index="index"
     :containerName="containerName"
   >
@@ -26,7 +26,7 @@ export default Vue.extend({
   name: "PureTextCard",
 
   components: { Card, AutoUploadTextArea },
-  props: ["cardData", "index", "addCardTF", "containerName"],
+  props: ["cardData", "index", "addCardType", "containerName"],
 
   data() {
     return { textContent: this.cardData.text, editTF: true };

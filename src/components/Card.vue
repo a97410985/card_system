@@ -1,6 +1,6 @@
 <template>
   <v-card :style="cardStyle" class="mx-auto">
-    <v-card-actions v-if="addCardTF">
+    <v-card-actions class="pa-0" v-if="addCardType">
       <v-btn icon @click="addToLeft" color="primary">
         <v-icon>keyboard_backspace</v-icon>
       </v-btn>
@@ -9,7 +9,7 @@
         <v-icon>arrow_right_alt</v-icon>
       </v-btn>
     </v-card-actions>
-    <v-card-actions>
+    <v-card-actions class="pa-0">
       <v-btn @click="zoomIn" icon small>
         <v-icon>zoom_in</v-icon>
       </v-btn>
@@ -21,6 +21,9 @@
       </v-btn>
       <v-btn icon small>
         <v-icon @click="closeCard">cancel</v-icon>
+      </v-btn>
+      <v-btn icon small @click="moveCard">
+        m
       </v-btn>
       <v-spacer></v-spacer>
       <slot name="top-right-bar"></slot>
@@ -40,7 +43,7 @@ import { cardTypes, cardType } from "../card";
 
 export default Vue.extend({
   name: "Card",
-  props: ["cardData", "addCardTF", "index", "containerName"],
+  props: ["cardData", "addCardType", "index", "containerName"],
 
   components: {},
 
@@ -156,6 +159,15 @@ export default Vue.extend({
 
       while (vm) {
         vm.$emit("closeCard", this.index, vm);
+        vm = vm.$parent;
+      }
+    },
+    moveCard() {
+      console.log("move card");
+      let vm = this.$parent;
+
+      while (vm) {
+        vm.$emit("moveCard", this.cardData);
         vm = vm.$parent;
       }
     },

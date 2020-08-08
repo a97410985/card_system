@@ -28,14 +28,22 @@
               </v-list>
             </v-menu>
             <v-btn
-              v-if="addCardTF"
+              v-if="addCardType === 'add'"
               small
               color="error"
               class="mx-2"
-              @click="addCardTF = !addCardTF"
+              @click="addCardType = ''"
             >
               cancel add card</v-btn
             >
+            <v-btn
+              v-if="this.cards.length === 0 && moveCardTempData !== null"
+              class="error mx-2"
+              small
+              @click="addCard(0, 0)"
+            >
+              to here
+            </v-btn>
           </div>
         </v-col>
         <v-col class="align-self-center">
@@ -54,13 +62,13 @@
         style="overflow:auto"
         @mousewheel="horizontalMouseScroll"
       >
-        <div v-for="(card, index) in cards" v-bind:key="card.id" class="mx-6">
+        <div v-for="(card, index) in cards" v-bind:key="card.id" class="mx-2">
           <component
             v-bind:is="card.type"
             containerName="searchContainer"
             :index="index"
             :cardData="card"
-            :addCardTF="addCardTF"
+            :addCardType="addCardType"
             @addCard="addCard"
             @deleteCard="deleteCard"
             @closeCard="closeCard"
@@ -101,6 +109,8 @@ export default Vue.extend({
     CodeCard,
   },
 
+  props: ["moveCardTempData"],
+
   data() {
     return {
       searchText: "" as string,
@@ -108,7 +118,7 @@ export default Vue.extend({
       idArr: [] as number[],
       cardTypes: cardTypes,
       curAddCardType: "PureTextCard" as cardType,
-      addCardTF: false,
+      addCardType: "",
     };
   },
   methods: {
@@ -121,14 +131,11 @@ export default Vue.extend({
         checkAndInitializeImageCardPromsie,
         checkAndInitializeCodeCardPromsie,
       ]).then((values) => {
-        console.log(values);
         Promise.all(
           cardTypes.map((type) => {
             return searchCardPromise(type);
           })
         ).then((v: any) => {
-          console.log(v);
-          console.log(values);
           for (let i = 0; i < cardTypes.length; i++) {
             if (v[i]) {
               v[i].data.hits.hits.forEach((element: any) => {
@@ -141,8 +148,6 @@ export default Vue.extend({
       });
     },
     updateSearch() {
-      console.log("updateSearch");
-      console.log("updateSearch");
       // TODO: 換掉這種ugly的處理方式
       this.idArr.forEach((id) => {
         clearTimeout(id);
@@ -161,7 +166,6 @@ export default Vue.extend({
             });
           })
         ).then((result) => {
-          console.log(result);
           this.cards = [];
           result.forEach((r) => {
             if (r)
@@ -180,7 +184,6 @@ export default Vue.extend({
     },
 
     horizontalMouseScroll(event: WheelEvent | any) {
-      console.log("horizontalMouseScroll");
       // 使用此函數需要替有scroll bar的DOM element加上card-container這個class
       event.stopPropagation();
       event.preventDefault();
@@ -193,7 +196,6 @@ export default Vue.extend({
       }
     },
     deleteCard(index: number) {
-      console.log("deleteCard");
       this.cards.splice(index, 1);
     },
     closeCard(index: number) {
@@ -207,47 +209,67 @@ export default Vue.extend({
       if (this.cards.length === 0) {
         this.addCard(0, 0);
       } else {
-        this.addCardTF = true;
+        this.addCardType = "add";
       }
     },
     addCard(value: number, offset: number) {
-      const uuid: string = uuidv4();
-      const obj = {
-        id: uuid,
-        type: this.curAddCardType,
-        style: {
-          width: 250,
-          height: 200,
-        },
-      } as genralCardInterface;
-      if (this.curAddCardType === "PureTextCard") {
-        (obj as PureTextCardInterface).text = "";
-      } else if (this.curAddCardType === "ImageCard") {
-        (obj as ImageCardInterface).img = "";
-        (obj as ImageCardInterface).description = "";
-      } else if (this.curAddCardType === "CodeCard") {
-        (obj as CodeCardInterface).code = "";
-        (obj as CodeCardInterface).description = "";
-      }
-      alert("add card");
+      if (this.moveCardTempData) {
+        this.cards.splice(value + offset, 0, this.moveCardTempData);
+        let vm = this.$parent;
 
-      axios({
-        method: "put",
-        baseURL: "/api",
-        url: `${this.curAddCardType.toLowerCase()}/_doc/${uuid}`,
-        data: obj,
-        responseType: "json",
-      })
-        .then((result) => {
-          console.log(result);
+        while (vm) {
+          vm.$emit("moveCardEnd");
+          vm = vm.$parent;
+        }
+      } else {
+        const uuid: string = uuidv4();
+        const obj = {
+          id: uuid,
+          type: this.curAddCardType,
+          style: {
+            width: 250,
+            height: 200,
+          },
+        } as genralCardInterface;
+        if (this.curAddCardType === "PureTextCard") {
+          (obj as PureTextCardInterface).text = "";
+        } else if (this.curAddCardType === "ImageCard") {
+          (obj as ImageCardInterface).img = "";
+          (obj as ImageCardInterface).description = "";
+        } else if (this.curAddCardType === "CodeCard") {
+          (obj as CodeCardInterface).code = "";
+          (obj as CodeCardInterface).description = "";
+        }
+        alert("add card");
+
+        axios({
+          method: "put",
+          baseURL: "/api",
+          url: `${this.curAddCardType.toLowerCase()}/_doc/${uuid}`,
+          data: obj,
+          responseType: "json",
         })
-        .catch((err) => {
-          console.log(err);
-        });
-      if (obj) {
-        this.cards.splice(value + offset, 0, obj);
+          .then((result) => {
+            console.log(result);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        if (obj) {
+          this.cards.splice(value + offset, 0, obj);
+        }
+        this.addCardType = "";
       }
-      this.addCardTF = false;
+    },
+  },
+  watch: {
+    moveCardTempData: function() {
+      if (this.moveCardTempData) {
+        console.log("moveCardTempData", this.moveCardTempData);
+        this.addCardType = "move";
+      } else {
+        this.addCardType = "";
+      }
     },
   },
 });

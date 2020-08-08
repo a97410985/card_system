@@ -1,7 +1,7 @@
 <template>
   <card
     :cardData="cardData"
-    :addCardTF="addCardTF"
+    :addCardType="addCardType"
     :index="index"
     :containerName="containerName"
   >
@@ -41,7 +41,7 @@ export default Vue.extend({
   name: "ImageCard",
   components: { Card, DropFilesArea, HoverEditableDescription },
 
-  props: ["cardData", "index", "addCardTF", "containerName"],
+  props: ["cardData", "index", "addCardType", "containerName"],
 
   data() {
     return {
