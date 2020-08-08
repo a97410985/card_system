@@ -33,7 +33,7 @@ export default Vue.extend({
   components: { AutoUploadTextArea },
   data() {
     return {
-      menu: false,
+      menu: false
     };
   },
   computed: {
@@ -43,7 +43,7 @@ export default Vue.extend({
       } else {
         return "text";
       }
-    },
-  },
+    }
+  }
 });
 </script>

@@ -13,14 +13,14 @@ export default Vue.extend({
   data() {
     return {
       idArr: [] as number[],
-      textContent: this.cardData[this.textField] as string,
+      textContent: this.cardData[this.textField] as string
     };
   },
   // updataObj是要傳部分要更新的資料{doc:{xxx:""}} ; textField是要更新欄位的名稱
   props: ["cardData", "updateObj", "textField"],
   methods: {
     updateText() {
-      this.idArr.forEach((id) => {
+      this.idArr.forEach(id => {
         clearTimeout(id);
       });
       this.idArr = [];
@@ -34,14 +34,14 @@ export default Vue.extend({
         );
 
         console.log(this.textContent);
-        this.idArr.forEach((id) => {
+        this.idArr.forEach(id => {
           clearTimeout(id);
         });
         this.idArr = [];
       }, 3000);
       this.idArr.push(id);
-    },
-  },
+    }
+  }
 });
 </script>
 

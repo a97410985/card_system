@@ -9,11 +9,11 @@ const playgroundMode = false;
 if (playgroundMode) {
   new Vue({
     vuetify,
-    render: (h) => h(Playground),
+    render: h => h(Playground)
   }).$mount("#app");
 } else {
   new Vue({
     vuetify,
-    render: (h) => h(App),
+    render: h => h(App)
   }).$mount("#app");
 }

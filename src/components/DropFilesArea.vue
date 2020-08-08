@@ -23,8 +23,8 @@ export default Vue.extend({
       if (e.dataTransfer) {
         e.dataTransfer.dropEffect = "copy";
       }
-    },
-  },
+    }
+  }
 });
 </script>
 <style scoped>

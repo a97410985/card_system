@@ -101,7 +101,6 @@ export const searchCardPromise = (cardType: cardType, queryObj?: any) => {
     })
       .then((result) => {
         console.log(result);
-        const cardsArr = result.data.hits.hits;
         return result;
       })
       .catch((err) => {
@@ -117,7 +116,6 @@ export const searchCardPromise = (cardType: cardType, queryObj?: any) => {
     })
       .then((result) => {
         console.log(result);
-        const cardsArr = result.data.hits.hits;
         return result;
       })
       .catch((err) => {

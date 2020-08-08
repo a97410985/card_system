@@ -8,42 +8,42 @@ export const PureTextCardSettings = {
     analysis: {
       analyzer: {
         my_hanlp_analyzer: {
-          tokenizer: "my_hanlp",
-        },
+          tokenizer: "my_hanlp"
+        }
       },
       tokenizer: {
         my_hanlp: {
           type: "hanlp",
           enable_stop_dictionary: true,
-          enable_custom_config: true,
-        },
-      },
-    },
+          enable_custom_config: true
+        }
+      }
+    }
   },
   mappings: {
     properties: {
       id: {
-        type: "keyword",
+        type: "keyword"
       },
       type: {
-        type: "keyword",
+        type: "keyword"
       },
       text: {
         type: "text",
-        analyzer: "my_hanlp_analyzer",
+        analyzer: "my_hanlp_analyzer"
       },
       style: {
         properties: {
           width: {
-            type: "integer",
+            type: "integer"
           },
           height: {
-            type: "integer",
-          },
-        },
-      },
-    },
-  },
+            type: "integer"
+          }
+        }
+      }
+    }
+  }
 };
 
 export const ImageCardSettings = {
@@ -51,45 +51,45 @@ export const ImageCardSettings = {
     analysis: {
       analyzer: {
         my_hanlp_analyzer: {
-          tokenizer: "my_hanlp",
-        },
+          tokenizer: "my_hanlp"
+        }
       },
       tokenizer: {
         my_hanlp: {
           type: "hanlp",
           enable_stop_dictionary: true,
-          enable_custom_config: true,
-        },
-      },
-    },
+          enable_custom_config: true
+        }
+      }
+    }
   },
   mappings: {
     properties: {
       id: {
-        type: "keyword",
+        type: "keyword"
       },
       type: {
-        type: "keyword",
+        type: "keyword"
       },
       description: {
         type: "text",
-        analyzer: "my_hanlp_analyzer",
+        analyzer: "my_hanlp_analyzer"
       },
       img: {
-        type: "binary",
+        type: "binary"
       },
       style: {
         properties: {
           width: {
-            type: "integer",
+            type: "integer"
           },
           height: {
-            type: "integer",
-          },
-        },
-      },
-    },
-  },
+            type: "integer"
+          }
+        }
+      }
+    }
+  }
 };
 
 export const CodeCardSettings = {
@@ -97,46 +97,46 @@ export const CodeCardSettings = {
     analysis: {
       analyzer: {
         my_hanlp_analyzer: {
-          tokenizer: "my_hanlp",
-        },
+          tokenizer: "my_hanlp"
+        }
       },
       tokenizer: {
         my_hanlp: {
           type: "hanlp",
           enable_stop_dictionary: true,
-          enable_custom_config: true,
-        },
-      },
-    },
+          enable_custom_config: true
+        }
+      }
+    }
   },
   mappings: {
     properties: {
       id: {
-        type: "keyword",
+        type: "keyword"
       },
       type: {
-        type: "keyword", // exact match
+        type: "keyword" // exact match
       },
       code: {
         type: "text",
-        index: false, // not quearyable
+        index: false // not quearyable
       },
       description: {
         type: "text", // index ~ full-text-search
-        analyzer: "my_hanlp_analyzer",
+        analyzer: "my_hanlp_analyzer"
       },
       style: {
         properties: {
           width: {
-            type: "integer",
+            type: "integer"
           },
           height: {
-            type: "integer",
-          },
-        },
-      },
-    },
-  },
+            type: "integer"
+          }
+        }
+      }
+    }
+  }
 };
 
 interface CardInterface {

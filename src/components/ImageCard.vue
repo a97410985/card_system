@@ -31,23 +31,23 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import Card from './Card.vue';
-import DropFilesArea from './DropFilesArea.vue';
-import HoverEditableDescription from './HoverEditableDescription.vue';
-import axios from 'axios';
+import Vue from "vue";
+import Card from "./Card.vue";
+import DropFilesArea from "./DropFilesArea.vue";
+import HoverEditableDescription from "./HoverEditableDescription.vue";
+import axios from "axios";
 
 export default Vue.extend({
-  name: 'ImageCard',
+  name: "ImageCard",
   components: { Card, DropFilesArea, HoverEditableDescription },
 
-  props: ['cardData', 'index', 'addCardType', 'containerName'],
+  props: ["cardData", "index", "addCardType", "containerName"],
 
   data() {
     return {
       settingMenu: false,
       editTF: true,
-      imgSrc: 'data:image/png;base64, ' + this.cardData.img
+      imgSrc: "data:image/png;base64, " + this.cardData.img
     };
   },
 
@@ -60,23 +60,23 @@ export default Vue.extend({
       const reader = new FileReader();
       reader.onload = function() {
         const dataUrl = reader.result;
-        if (typeof dataUrl === 'string') {
-          const base64 = dataUrl.split(',')[1];
+        if (typeof dataUrl === "string") {
+          const base64 = dataUrl.split(",")[1];
           callback(base64);
         }
       };
       reader.readAsDataURL(blob);
     },
     handleDropFiles(files: FileList) {
-      console.log('handleDropFiles');
+      console.log("handleDropFiles");
       if (files.length > 0) {
         this.blobToBase64(files[0], base64 => {
           console.log(base64);
-          this.imgSrc = 'data:image/png;base64, ' + base64;
+          this.imgSrc = "data:image/png;base64, " + base64;
           // 要update資料，partial updates to documents
           axios({
-            method: 'post',
-            baseURL: '/api',
+            method: "post",
+            baseURL: "/api",
             url: `/${this.cardData.type.toLowerCase()}/_doc/${
               this.cardData.id
             }/_update`,
@@ -85,7 +85,7 @@ export default Vue.extend({
                 img: base64
               }
             },
-            responseType: 'json'
+            responseType: "json"
           })
             .then(result => {
               console.log(result);
@@ -101,5 +101,5 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-@import '~material-icons/iconfont/material-icons.css';
+@import "~material-icons/iconfont/material-icons.css";
 </style>

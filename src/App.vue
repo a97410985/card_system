@@ -72,14 +72,14 @@ import {
   cardTypes,
   genralCardInterface,
   ImageCardInterface,
-  CodeCardInterface,
+  CodeCardInterface
 } from "./card";
 
 import {
   checkAndInitializePureTextCardPromsie,
   checkAndInitializeImageCardPromsie,
   checkAndInitializeCodeCardPromsie,
-  searchCardPromise,
+  searchCardPromise
 } from "./elasticSearchHelper";
 
 axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
@@ -89,7 +89,7 @@ export default Vue.extend({
 
   components: {
     DropFilesArea,
-    CardContainer,
+    CardContainer
   },
 
   methods: {
@@ -111,7 +111,7 @@ export default Vue.extend({
           Promise.all([
             checkAndInitializePureTextCardPromsie,
             checkAndInitializeImageCardPromsie,
-            checkAndInitializeCodeCardPromsie,
+            checkAndInitializeCodeCardPromsie
           ]).then(() => {
             if (typeof reader.result === "string") {
               console.log(JSON.parse(reader.result));
@@ -126,12 +126,12 @@ export default Vue.extend({
                   baseURL: "/api",
                   url: `puretextcard/_doc/${element.id}`,
                   data: element,
-                  responseType: "json",
+                  responseType: "json"
                 })
-                  .then((result) => {
+                  .then(result => {
                     console.log(result);
                   })
-                  .catch((err) => {
+                  .catch(err => {
                     console.log(err);
                   });
               });
@@ -141,12 +141,12 @@ export default Vue.extend({
                   baseURL: "/api",
                   url: `imagecard/_doc/${element.id}`,
                   data: element,
-                  responseType: "json",
+                  responseType: "json"
                 })
-                  .then((result) => {
+                  .then(result => {
                     console.log(result);
                   })
-                  .catch((err) => {
+                  .catch(err => {
                     console.log(err);
                   });
               });
@@ -156,12 +156,12 @@ export default Vue.extend({
                   baseURL: "/api",
                   url: `codecard/_doc/${element.id}`,
                   data: element,
-                  responseType: "json",
+                  responseType: "json"
                 })
-                  .then((result) => {
+                  .then(result => {
                     console.log(result);
                   })
-                  .catch((err) => {
+                  .catch(err => {
                     console.log(err);
                   });
               });
@@ -173,7 +173,7 @@ export default Vue.extend({
     },
     exportCards() {
       Promise.all(
-        cardTypes.map((type) => {
+        cardTypes.map(type => {
           return searchCardPromise(type);
         })
       ).then((values: any) => {
@@ -195,7 +195,7 @@ export default Vue.extend({
         console.log("tempCardsObj", tempCardsObj);
         // 建立json檔案並下載
         const blob = new Blob([JSON.stringify(tempCardsObj)], {
-          type: "application/json",
+          type: "application/json"
         });
         const a = document.createElement("a");
         document.body.appendChild(a);
@@ -204,14 +204,14 @@ export default Vue.extend({
         a.click();
         a.remove();
       });
-    },
+    }
   },
 
   data: () => ({
     cardTypes: cardTypes,
     dropImportJsonDialog: false,
-    moveCardTempData: null as genralCardInterface | null,
-  }),
+    moveCardTempData: null as genralCardInterface | null
+  })
 });
 </script>
 

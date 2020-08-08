@@ -90,13 +90,13 @@ import {
   cardType,
   PureTextCardInterface,
   ImageCardInterface,
-  CodeCardInterface,
+  CodeCardInterface
 } from "@/card";
 import {
   checkAndInitializePureTextCardPromsie,
   checkAndInitializeImageCardPromsie,
   checkAndInitializeCodeCardPromsie,
-  searchCardPromise,
+  searchCardPromise
 } from "@/elasticSearchHelper";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
@@ -106,7 +106,7 @@ export default Vue.extend({
   components: {
     PureTextCard,
     ImageCard,
-    CodeCard,
+    CodeCard
   },
 
   props: ["moveCardTempData"],
@@ -118,7 +118,7 @@ export default Vue.extend({
       idArr: [] as number[],
       cardTypes: cardTypes,
       curAddCardType: "PureTextCard" as cardType,
-      addCardType: "",
+      addCardType: ""
     };
   },
   methods: {
@@ -129,10 +129,10 @@ export default Vue.extend({
       Promise.all([
         checkAndInitializePureTextCardPromsie,
         checkAndInitializeImageCardPromsie,
-        checkAndInitializeCodeCardPromsie,
-      ]).then((values) => {
+        checkAndInitializeCodeCardPromsie
+      ]).then(values => {
         Promise.all(
-          cardTypes.map((type) => {
+          cardTypes.map(type => {
             return searchCardPromise(type);
           })
         ).then((v: any) => {
@@ -149,25 +149,25 @@ export default Vue.extend({
     },
     updateSearch() {
       // TODO: 換掉這種ugly的處理方式
-      this.idArr.forEach((id) => {
+      this.idArr.forEach(id => {
         clearTimeout(id);
       });
       this.idArr = [];
       const id = setTimeout(() => {
         Promise.all(
-          cardTypes.map((type) => {
+          cardTypes.map(type => {
             if (type !== "PureTextCard") {
               return searchCardPromise(type, {
-                match: { description: this.searchText },
+                match: { description: this.searchText }
               });
             }
             return searchCardPromise(type, {
-              match: { text: this.searchText },
+              match: { text: this.searchText }
             });
           })
-        ).then((result) => {
+        ).then(result => {
           this.cards = [];
-          result.forEach((r) => {
+          result.forEach(r => {
             if (r)
               r.data.hits.hits.forEach((element: any) => {
                 const card: genralCardInterface = element._source;
@@ -175,7 +175,7 @@ export default Vue.extend({
               });
           });
         });
-        this.idArr.forEach((id) => {
+        this.idArr.forEach(id => {
           clearTimeout(id);
         });
         this.idArr = [];
@@ -228,8 +228,8 @@ export default Vue.extend({
           type: this.curAddCardType,
           style: {
             width: 250,
-            height: 200,
-          },
+            height: 200
+          }
         } as genralCardInterface;
         if (this.curAddCardType === "PureTextCard") {
           (obj as PureTextCardInterface).text = "";
@@ -247,12 +247,12 @@ export default Vue.extend({
           baseURL: "/api",
           url: `${this.curAddCardType.toLowerCase()}/_doc/${uuid}`,
           data: obj,
-          responseType: "json",
+          responseType: "json"
         })
-          .then((result) => {
+          .then(result => {
             console.log(result);
           })
-          .catch((err) => {
+          .catch(err => {
             console.log(err);
           });
         if (obj) {
@@ -260,7 +260,7 @@ export default Vue.extend({
         }
         this.addCardType = "";
       }
-    },
+    }
   },
   watch: {
     moveCardTempData: function() {
@@ -270,8 +270,8 @@ export default Vue.extend({
       } else {
         this.addCardType = "";
       }
-    },
-  },
+    }
+  }
 });
 </script>
 <style scoped>

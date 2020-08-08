@@ -40,30 +40,30 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import ace from 'ace-builds';
-import 'ace-builds/webpack-resolver';
-import 'ace-builds/src-noconflict/theme-twilight';
-import 'ace-builds/src-noconflict/mode-javascript';
-import 'ace-builds/src-noconflict/mode-c_cpp';
-import 'ace-builds/src-noconflict/mode-typescript';
-import 'ace-builds/src-noconflict/mode-json';
-import Card from './Card.vue';
-import HoverEditableDescription from './HoverEditableDescription.vue';
-import { updateCardSingleField } from '../elasticSearchHelper';
-import { v4 as uuidv4 } from 'uuid';
+import Vue from "vue";
+import ace from "ace-builds";
+import "ace-builds/webpack-resolver";
+import "ace-builds/src-noconflict/theme-twilight";
+import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/mode-c_cpp";
+import "ace-builds/src-noconflict/mode-typescript";
+import "ace-builds/src-noconflict/mode-json";
+import Card from "./Card.vue";
+import HoverEditableDescription from "./HoverEditableDescription.vue";
+import { updateCardSingleField } from "../elasticSearchHelper";
+import { v4 as uuidv4 } from "uuid";
 
 export default Vue.extend({
-  name: 'CodeCard',
+  name: "CodeCard",
   components: { Card, HoverEditableDescription },
-  props: ['cardData', 'index', 'addCardType', 'containerName'],
+  props: ["cardData", "index", "addCardType", "containerName"],
   mounted() {
     const editor = ace.edit(this.editorID);
     this.editor = editor;
-    editor.setTheme('ace/theme/twilight');
-    editor.getSession().setMode('ace/mode/javascript');
+    editor.setTheme("ace/theme/twilight");
+    editor.getSession().setMode("ace/mode/javascript");
     editor.setValue(this.cardData.code);
-    editor.on('input', () => {
+    editor.on("input", () => {
       this.idArr.forEach(id => {
         clearTimeout(id);
       });
@@ -87,16 +87,16 @@ export default Vue.extend({
       editor: null as ace.Ace.Editor | null,
       editorID: uuidv4(),
       settingMenu: false,
-      selectProgrammingLanguage: 'javascript',
+      selectProgrammingLanguage: "javascript",
       idArr: [] as number[],
-      programmingLanguageArr: ['c_cpp', 'typescript', 'javascript', 'json']
+      programmingLanguageArr: ["c_cpp", "typescript", "javascript", "json"]
     };
   },
   methods: {
     setProgrammingLanguage() {
       if (this.editor) {
         this.editor.session.setMode(
-          'ace/mode/' + this.selectProgrammingLanguage
+          "ace/mode/" + this.selectProgrammingLanguage
         );
       }
     }

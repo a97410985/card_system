@@ -56,8 +56,8 @@ export default Vue.extend({
     return {
       cardStyle: {
         width: this.cardData.style.width + "px",
-        height: "auto",
-      },
+        height: "auto"
+      }
     };
   },
 
@@ -90,16 +90,16 @@ export default Vue.extend({
           doc: {
             style: {
               width: width,
-              height: height,
-            },
-          },
+              height: height
+            }
+          }
         },
-        responseType: "json",
+        responseType: "json"
       })
-        .then((result) => {
+        .then(result => {
           console.log(result);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -139,12 +139,12 @@ export default Vue.extend({
         method: "delete",
         baseURL: "/api",
         url: `/${this.cardData.type.toLowerCase()}/_doc/${this.cardData.id}`,
-        responseType: "json",
+        responseType: "json"
       })
-        .then((result) => {
+        .then(result => {
           console.log(result);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
       let vm = this.$parent;
@@ -170,8 +170,8 @@ export default Vue.extend({
         vm.$emit("moveCard", this.cardData);
         vm = vm.$parent;
       }
-    },
-  },
+    }
+  }
 });
 </script>
 <style scoped>
