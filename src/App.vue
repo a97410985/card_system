@@ -34,17 +34,17 @@
     <v-main @moveCard="moveCard" @moveCardEnd="moveCardEnd">
       <v-row>
         <v-col>
-          <card-container :moveCardTempData="moveCardTempData">
+          <card-container mode="normal" :moveCardTempData="moveCardTempData">
           </card-container>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="6">
-          <card-container :moveCardTempData="moveCardTempData">
+          <card-container mode="normal" :moveCardTempData="moveCardTempData">
           </card-container>
         </v-col>
         <v-col cols="6">
-          <card-container :moveCardTempData="moveCardTempData">
+          <card-container mode="normal" :moveCardTempData="moveCardTempData">
           </card-container>
         </v-col>
       </v-row>

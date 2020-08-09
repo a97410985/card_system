@@ -1,7 +1,7 @@
 <template>
   <v-card class="mx-2">
     <div class="mx-2">
-      <v-row>
+      <v-row v-if="mode === 'normal'">
         <v-col class="align-self-center">
           <div class="d-flex justify-start">
             <v-btn small class="mx-2" @click="loadAll">load all</v-btn>
@@ -96,11 +96,12 @@ import {
   checkAndInitializePureTextCardPromsie,
   checkAndInitializeImageCardPromsie,
   checkAndInitializeCodeCardPromsie,
-  searchCardPromise
+  searchCardPromise,
+  getCardsByIdArr
 } from "@/elasticSearchHelper";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-
+type containerMode = "normal" | "relation";
 export default Vue.extend({
   name: "CardContainer",
   components: {
@@ -109,7 +110,7 @@ export default Vue.extend({
     CodeCard
   },
 
-  props: ["moveCardTempData"],
+  props: ["moveCardTempData", "mode", "relation"],
 
   data() {
     return {
@@ -270,6 +271,33 @@ export default Vue.extend({
       } else {
         this.addCardType = "";
       }
+    }
+  },
+  created() {
+    if ((this.mode as containerMode) === "relation") {
+      console.log("load related card data");
+      Promise.all(
+        cardTypes.map(type => getCardsByIdArr(type, this.relation.related_card))
+      ).then(results => {
+        console.log(results);
+        // eslint-disable-next-line prefer-const
+        let cardDatas = [] as genralCardInterface[];
+        // 因為不知道哪張卡片的ID是哪個類型所以每個都找，因此要藉由found欄位決定有沒有拿到資料
+        results.forEach(result => {
+          if (result) {
+            const arr = result.data.docs;
+            arr.forEach(element => {
+              if (element.found === true) {
+                cardDatas.push(element._source);
+              }
+            });
+          }
+        });
+        this.cards = cardDatas;
+      });
+      // getCardsByIdArr(,this.relation.related_card).then(results => {
+      //   console.log(results);
+      // });
     }
   }
 });

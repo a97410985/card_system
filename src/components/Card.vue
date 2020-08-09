@@ -111,6 +111,8 @@
           <v-card-text>
             <display-card-container
               :moveCardTempData="null"
+              mode="relation"
+              :relation="relation"
             ></display-card-container>
           </v-card-text>
         </v-card>

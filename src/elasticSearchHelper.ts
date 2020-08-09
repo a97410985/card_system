@@ -4,7 +4,8 @@ import {
   ImageCardSettings,
   CodeCardSettings,
   cardType,
-  cardRelationMapping
+  cardRelationMapping,
+  cardTypes
 } from "./card";
 
 export const checkAndInitializePureTextCardPromsie = axios({
@@ -197,6 +198,27 @@ export const addRelationToCardPromise = (
   })
     .then(result => {
       console.log(result);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
+
+export const getCardsByIdArr = (cardType: cardType, IdArr: string[]) => {
+  const multiCardIndex = cardTypes
+    .map(type => type.toLocaleLowerCase())
+    .join(",");
+  console.log(multiCardIndex);
+  return axios({
+    method: "post",
+    baseURL: "/api",
+    url: `/${cardType.toLowerCase()}/_doc/_mget`,
+    data: { ids: IdArr },
+    responseType: "json"
+  })
+    .then(result => {
+      console.log(result);
+      return result;
     })
     .catch(err => {
       console.log(err);
