@@ -79,7 +79,8 @@ import {
   checkAndInitializePureTextCardPromsie,
   checkAndInitializeImageCardPromsie,
   checkAndInitializeCodeCardPromsie,
-  searchCardPromise
+  searchCardPromise,
+  checkAndInitializeCardRelationPromsie
 } from "./elasticSearchHelper";
 
 axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
@@ -205,6 +206,15 @@ export default Vue.extend({
         a.remove();
       });
     }
+  },
+
+  created() {
+    Promise.all([
+      checkAndInitializeCardRelationPromsie,
+      checkAndInitializePureTextCardPromsie,
+      checkAndInitializeImageCardPromsie,
+      checkAndInitializeCodeCardPromsie
+    ]);
   },
 
   data: () => ({

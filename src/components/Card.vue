@@ -25,12 +25,59 @@
       <v-btn icon small @click="moveCard">
         m
       </v-btn>
+      <v-btn icon small @click="copyID">
+        c
+      </v-btn>
+
+      <v-menu v-model="relationMenu" :close-on-content-click="false" offset-x>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            @click="fetchRelationArr"
+            color="indigo"
+            dark
+            v-bind="attrs"
+            v-on="on"
+            icon
+            small
+          >
+            r
+          </v-btn>
+        </template>
+        <v-card>
+          <v-card-title>建立關聯</v-card-title>
+          <v-card-text>
+            <v-combobox
+              v-model="RelationModel"
+              :search-input.sync="search"
+              hide-selected
+              small-chips
+              multiple
+              :items="relationNameArr"
+              label="關聯名稱"
+            >
+              <template v-slot:no-data>
+                <v-list-item>
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      No results matching "<strong>{{ search }}</strong
+                      >". Press <kbd>enter</kbd> to create a new one
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </template>
+            </v-combobox>
+            <v-text-field
+              label="卡片ID"
+              v-model="relationCardID"
+            ></v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn @click="addRelation">建立關聯</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-menu>
       <v-spacer></v-spacer>
       <slot name="top-right-bar"></slot>
-      <!-- <hover-editable-description
-        :cardData="cardData"
-        v-if="cardData.type !== 'PureTextCard'"
-      ></hover-editable-description> -->
     </v-card-actions>
     <slot name="content"></slot>
   </v-card>
@@ -40,6 +87,12 @@
 import Vue from "vue";
 import axios from "axios";
 import { cardTypes, cardType } from "../card";
+import {
+  searchCardPromise,
+  relationFetchPromise,
+  AddRelationPromise
+} from "@/elasticSearchHelper";
+import { v4 as uuidv4 } from "uuid";
 
 export default Vue.extend({
   name: "Card",
@@ -57,7 +110,12 @@ export default Vue.extend({
       cardStyle: {
         width: this.cardData.style.width + "px",
         height: "auto"
-      }
+      },
+      relationMenu: false,
+      relationNameArr: ["test", "haha"] as string[],
+      relationCardID: "" as string,
+      search: "" as string,
+      RelationModel: [] as string[]
     };
   },
 
@@ -170,6 +228,72 @@ export default Vue.extend({
         vm.$emit("moveCard", this.cardData);
         vm = vm.$parent;
       }
+    },
+    fetchRelationArr() {
+      // const data = relationFetchPromise();
+      // console.log(data);
+    },
+    addRelation() {
+      if (this.RelationModel.length === 0) {
+        // TODO: 卡片名稱為uuid的檢查
+        alert("需要填入關係");
+        return;
+      }
+      if (this.relationCardID === "") {
+        // TODO: 卡片名稱為uuid的檢查
+        alert("需要填入卡片名稱");
+        return;
+      }
+      console.log("relation");
+      console.log(this.RelationModel);
+      console.log(this.relationCardID);
+      console.log(this.cardData.id);
+      // 比較有沒有新增relation，有的話要更新到elasticsearch
+      this.RelationModel.forEach(name => {
+        if (!this.relationNameArr.includes(name)) {
+          // 新增card_relation
+          AddRelationPromise({
+            id: uuidv4(),
+            name: name
+          }).then(result => {
+            console.log(result);
+          });
+        }
+      });
+
+      // TODO： 在建立關聯的兩張卡片上儲存關係
+      this.relationMenu = false;
+    },
+    copyID() {
+      navigator.clipboard
+        .writeText(this.cardData.id)
+        .then(result => {
+          console.log(result);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  },
+  watch: {
+    relationMenu: async function() {
+      const result = await relationFetchPromise();
+      if (result) {
+        const relationArr = result.data.hits.hits as {
+          _source: {
+            id: string;
+            name: string;
+          };
+        }[];
+        // eslint-disable-next-line prefer-const
+        let temp = [] as string[];
+        for (let i = 0; i < relationArr.length; i++) {
+          if (relationArr[i]._source.name)
+            temp.push(relationArr[i]._source.name);
+        }
+        this.relationNameArr = temp;
+      }
+      console.log(result);
     }
   }
 });

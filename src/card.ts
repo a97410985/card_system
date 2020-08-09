@@ -3,6 +3,18 @@ export const cardTypes = ["PureTextCard", "ImageCard", "CodeCard"] as const;
 
 export type cardType = typeof cardTypes[number];
 
+// 紀錄卡片關聯
+const relationMappingObj = {
+  properties: {
+    relation_name: {
+      type: "keyword"
+    },
+    related_card: {
+      type: "keyword"
+    }
+  }
+};
+
 export const PureTextCardSettings = {
   settings: {
     analysis: {
@@ -41,7 +53,8 @@ export const PureTextCardSettings = {
             type: "integer"
           }
         }
-      }
+      },
+      card_relation_sets: relationMappingObj
     }
   }
 };
@@ -87,7 +100,8 @@ export const ImageCardSettings = {
             type: "integer"
           }
         }
-      }
+      },
+      card_relation_sets: relationMappingObj
     }
   }
 };
@@ -134,6 +148,20 @@ export const CodeCardSettings = {
             type: "integer"
           }
         }
+      },
+      card_relation_sets: relationMappingObj
+    }
+  }
+};
+
+export const cardRelationMapping = {
+  mappings: {
+    properties: {
+      id: {
+        type: "keyword"
+      },
+      name: {
+        type: "keyword"
       }
     }
   }
