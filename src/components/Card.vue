@@ -80,6 +80,42 @@
       <slot name="top-right-bar"></slot>
     </v-card-actions>
     <slot name="content"></slot>
+    <div>
+      <!-- <v-chip
+        class="mx-2"
+        v-for="(relation, index) in cardData.card_relation_sets"
+        :key="index"
+      >
+        {{ relation.relation_name }}
+      </v-chip> -->
+      <v-menu
+        :close-on-content-click="false"
+        offset-x
+        v-for="(relation, index) in cardData.card_relation_sets"
+        :key="index"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            v-bind="attrs"
+            v-on="on"
+            class="mx-2 mb-2"
+            color="green"
+            dark
+            small
+          >
+            {{ relation.relation_name }}
+          </v-btn>
+        </template>
+        <v-card>
+          <v-card-title>關聯</v-card-title>
+          <v-card-text>
+            <display-card-container
+              :moveCardTempData="null"
+            ></display-card-container>
+          </v-card-text>
+        </v-card>
+      </v-menu>
+    </div>
   </v-card>
 </template>
 
@@ -88,9 +124,9 @@ import Vue from "vue";
 import axios from "axios";
 import { cardTypes, cardType } from "../card";
 import {
-  searchCardPromise,
   relationFetchPromise,
-  AddRelationPromise
+  AddRelationPromise,
+  addRelationToCardPromise
 } from "@/elasticSearchHelper";
 import { v4 as uuidv4 } from "uuid";
 
@@ -98,7 +134,10 @@ export default Vue.extend({
   name: "Card",
   props: ["cardData", "addCardType", "index", "containerName"],
 
-  components: {},
+  components: {
+    "display-card-container": () =>
+      import("./CardContainer.vue") /* 用這樣動態載入的方式是為了避免循環參考 */
+  },
 
   created() {
     if (this.cardData.type === "CodeCard") {
@@ -111,6 +150,10 @@ export default Vue.extend({
         width: this.cardData.style.width + "px",
         height: "auto"
       },
+      cardRelation: (this.cardData.card_relation_sets || []) as {
+        relation_name: string;
+        related_card: string[];
+      }[],
       relationMenu: false,
       relationNameArr: ["test", "haha"] as string[],
       relationCardID: "" as string,
@@ -235,7 +278,6 @@ export default Vue.extend({
     },
     addRelation() {
       if (this.RelationModel.length === 0) {
-        // TODO: 卡片名稱為uuid的檢查
         alert("需要填入關係");
         return;
       }
@@ -262,6 +304,37 @@ export default Vue.extend({
       });
 
       // TODO： 在建立關聯的兩張卡片上儲存關係
+      // 如果關係已經有了就加到陣列，原本沒有就多加一個關係
+      this.RelationModel.forEach(name => {
+        let exists = false;
+        for (let i = 0; i < this.cardRelation.length; i++) {
+          if (this.cardRelation[i].relation_name === name) {
+            // 要確認原本沒有這張卡
+            if (
+              !this.cardRelation[i].related_card.includes(this.relationCardID)
+            )
+              this.cardRelation[i].related_card.push(this.relationCardID);
+            exists = true;
+          }
+        }
+        if (!exists) {
+          this.cardRelation.push({
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            relation_name: name,
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            related_card: [this.relationCardID]
+          });
+        }
+      });
+      console.log("this.cardRelation", this.cardRelation);
+
+      addRelationToCardPromise(
+        this.cardRelation,
+        this.cardData.id,
+        this.cardData.type
+      ).then(result => {
+        console.log(result);
+      });
       this.relationMenu = false;
     },
     copyID() {

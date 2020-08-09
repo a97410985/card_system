@@ -177,3 +177,28 @@ export const AddRelationPromise = (data: { id: string; name: string }) => {
       console.log(err);
     });
 };
+
+export const addRelationToCardPromise = (
+  data: { relation_name: string; related_card: string[] }[],
+  cardID: string,
+  cardType: cardType
+) => {
+  return axios({
+    method: "post",
+    baseURL: "/api",
+    url: `/${cardType.toLowerCase()}/_doc/${cardID}/_update`,
+    data: {
+      doc: {
+        /* eslint-disable @typescript-eslint/camelcase */
+        card_relation_sets: data
+      }
+    },
+    responseType: "json"
+  })
+    .then(result => {
+      console.log(result);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};

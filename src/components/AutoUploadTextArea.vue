@@ -1,5 +1,11 @@
 <template>
-  <v-textarea v-model="textContent" outlined @input="updateText"></v-textarea>
+  <v-textarea
+    hide-details
+    v-model="textContent"
+    outlined
+    @input="updateText"
+    class="pb-2 mb-0"
+  ></v-textarea>
 </template>
 
 <script lang="ts">
