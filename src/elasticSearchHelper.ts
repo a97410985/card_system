@@ -5,7 +5,8 @@ import {
   CodeCardSettings,
   cardType,
   cardRelationMapping,
-  cardTypes
+  cardTypes,
+  genralCardInterface
 } from "./card";
 
 export const checkAndInitializePureTextCardPromsie = axios({
@@ -223,4 +224,20 @@ export const getCardsByIdArr = (cardType: cardType, IdArr: string[]) => {
     .catch(err => {
       console.log(err);
     });
+};
+
+export const getCardDataByIdPromise = (id: string) => {
+  let relatedCardData: genralCardInterface;
+  return Promise.all(cardTypes.map(type => getCardsByIdArr(type, [id]))).then(
+    results => {
+      results.forEach(result => {
+        if (result) {
+          if (result.data.docs[0].found) {
+            relatedCardData = result.data.docs[0]._source;
+          }
+        }
+      });
+      return relatedCardData;
+    }
+  );
 };

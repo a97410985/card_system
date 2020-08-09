@@ -91,7 +91,7 @@
       <v-menu
         :close-on-content-click="false"
         offset-x
-        v-for="(relation, index) in cardData.card_relation_sets"
+        v-for="(relation, index) in cardRelation"
         :key="index"
       >
         <template v-slot:activator="{ on, attrs }">
@@ -124,13 +124,16 @@
 <script lang="ts">
 import Vue from "vue";
 import axios from "axios";
-import { cardTypes, cardType } from "../card";
+import { cardTypes, cardType, genralCardInterface } from "../card";
 import {
   relationFetchPromise,
   AddRelationPromise,
-  addRelationToCardPromise
+  addRelationToCardPromise,
+  getCardsByIdArr,
+  getCardDataByIdPromise
 } from "@/elasticSearchHelper";
 import { v4 as uuidv4 } from "uuid";
+import EventBus from "./event-bus";
 
 export default Vue.extend({
   name: "Card",
@@ -157,7 +160,7 @@ export default Vue.extend({
         related_card: string[];
       }[],
       relationMenu: false,
-      relationNameArr: ["test", "haha"] as string[],
+      relationNameArr: [] as string[],
       relationCardID: "" as string,
       search: "" as string,
       RelationModel: [] as string[]
@@ -305,7 +308,7 @@ export default Vue.extend({
         }
       });
 
-      // TODO： 在建立關聯的兩張卡片上儲存關係
+      // TODO： 在建立關聯的兩張卡片上儲存關係(完成)，重構到比較簡潔的形式
       // 如果關係已經有了就加到陣列，原本沒有就多加一個關係
       this.RelationModel.forEach(name => {
         let exists = false;
@@ -337,6 +340,52 @@ export default Vue.extend({
       ).then(result => {
         console.log(result);
       });
+
+      // 將關係加到另外一張卡片上
+      let relatedCardData: genralCardInterface;
+      getCardDataByIdPromise(this.relationCardID).then(result => {
+        console.warn(result);
+      });
+      getCardDataByIdPromise(this.relationCardID).then(relatedCardData => {
+        let cardRelationSets = relatedCardData.card_relation_sets;
+        this.RelationModel.forEach(name => {
+          let exists = false;
+          // 可能沒有這個欄位card_relation_sets
+          if (!cardRelationSets) {
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            cardRelationSets = [];
+          }
+          for (let i = 0; i < cardRelationSets.length; i++) {
+            if (cardRelationSets[i].relation_name === name) {
+              // 要確認原本沒有這張卡
+              if (!cardRelationSets[i].related_card.includes(this.cardData.id))
+                cardRelationSets[i].related_card.push(this.cardData.id);
+              exists = true;
+            }
+          }
+          if (!exists) {
+            cardRelationSets.push({
+              // eslint-disable-next-line @typescript-eslint/camelcase
+              relation_name: name,
+              // eslint-disable-next-line @typescript-eslint/camelcase
+              related_card: [this.cardData.id]
+            });
+          }
+        });
+        // eslint-disable-next-line
+        if (relatedCardData !== undefined) {
+          addRelationToCardPromise(
+            cardRelationSets,
+            this.relationCardID,
+            relatedCardData.type
+          ).then(result => {
+            console.log(result);
+            // 要對方的UI元件更新關聯資料
+            EventBus.$emit("updateReletion", this.relationCardID);
+          });
+        }
+      });
+
       this.relationMenu = false;
     },
     copyID() {
@@ -349,6 +398,18 @@ export default Vue.extend({
           console.log(err);
         });
     }
+  },
+  mounted() {
+    EventBus.$on("updateReletion", cardID => {
+      // 因為關聯有可能循環，可能會造成更新overhead甚至無窮更新
+      if (cardID === this.cardData.id) {
+        console.warn("updateReletion，可能overhead");
+        getCardDataByIdPromise(this.cardData.id).then(cardData => {
+          this.cardRelation = cardData.card_relation_sets;
+          console.log("this.cardRelation", this.cardRelation);
+        });
+      }
+    });
   },
   watch: {
     relationMenu: async function() {

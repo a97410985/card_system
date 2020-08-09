@@ -174,6 +174,10 @@ interface CardInterface {
     width: number;
     height: number;
   };
+  card_relation_sets: {
+    relation_name: string;
+    related_card: string[];
+  }[];
 }
 export interface CodeCardInterface extends CardInterface {
   code: string;

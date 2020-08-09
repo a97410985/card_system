@@ -1,5 +1,8 @@
 # card_system
 
+## vue event bus
+1. 要求更新關聯區塊的事件(卡片的最下面) : updateReletion(cardID:string)
+
 ## Project setup
 ```
 yarn install
