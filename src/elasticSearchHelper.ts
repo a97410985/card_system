@@ -1,5 +1,5 @@
 import axios from "axios";
-import { cardType, PureTextCardSettings, genralCardInterface } from "./Card";
+import { cardType, PureTextCardSettings, CardSettingInterface } from "./Card";
 
 const elasticSearchURL = "http://127.0.0.1:9200/";
 
@@ -76,7 +76,7 @@ export const checkCardIndexPromise = (cardType: cardType, redirect: boolean) =>
 
 export const checkAndCreateCardIndexPromise = (
   cardType: cardType,
-  cardSetting: genralCardInterface,
+  cardSetting: CardSettingInterface,
   redirect: boolean
 ) =>
   axios({
@@ -180,11 +180,25 @@ export const createSanpshot = (repository: string, snapshot: string) =>
       return false;
     });
 
+export const readSnapshot = (repository: string, snapshot: string) =>
+  axios({
+    method: "GET",
+    baseURL: elasticSearchURL,
+    url: `_snapshot/${repository}/${snapshot}`
+  })
+    .then(result => {
+      return result.data;
+    })
+    .catch(error => {
+      console.error(error.response.data);
+      return null;
+    });
+
 export const deleteSnapshot = (repository: string, snapshot: string) => {
   axios({
     method: "DELETE",
     baseURL: elasticSearchURL,
-    url: `_snapshot/${repository}/${snapshot}?wait_for_completion=true`
+    url: `_snapshot/${repository}/${snapshot}`
   })
     .then(result => {
       return true;
@@ -195,6 +209,67 @@ export const deleteSnapshot = (repository: string, snapshot: string) => {
       return false;
     });
 };
+
+export const deleteSnapshotUntilComplete = (
+  repository: string,
+  snapshot: string
+) => {
+  axios({
+    method: "DELETE",
+    baseURL: elasticSearchURL,
+    url: `_snapshot/${repository}/${snapshot}`
+  })
+    .then(async result => {
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const data = await readSnapshot(repository, snapshot);
+        if (data === null) {
+          console.log("complete delte");
+          break;
+        }
+      }
+      return true;
+    })
+    .catch(error => {
+      console.error(error.response.data);
+
+      return false;
+    });
+};
+
+export const getAllSnapshotInRepository = (repository: string) =>
+  axios({
+    method: "GET",
+    baseURL: elasticSearchURL,
+    url: `_snapshot/${repository}/_all`
+  })
+    .then(result => {
+      return result.data.snapshots.map(
+        (obj: { snapshot: any }) => obj.snapshot
+      );
+    })
+    .catch(error => {
+      console.error(error.response.data);
+
+      return null;
+    });
+
+export const deleteSnapshotsInRepository = (
+  repository: string,
+  snapshotList: string[]
+) =>
+  axios({
+    method: "DELETE",
+    baseURL: elasticSearchURL,
+    url: `_snapshot/${repository}/${snapshotList.join(",").substring(0, -1)}`
+  })
+    .then(result => {
+      return true;
+    })
+    .catch(error => {
+      console.error(error.response.data);
+      return false;
+    });
 
 export const restoreBySnapshot = (repository: string, snapshot: string) =>
   axios({

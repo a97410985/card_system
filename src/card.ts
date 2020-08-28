@@ -1,5 +1,10 @@
 export const cardTypes = ["PureTextCard", "ImageCard", "CodeCard"] as const;
 export type cardType = typeof cardTypes[number];
+
+export interface CardSettingInterface {
+  settings: any;
+  mappings: any;
+}
 // 紀錄卡片關聯
 const relationMappingObj = {
   properties: {

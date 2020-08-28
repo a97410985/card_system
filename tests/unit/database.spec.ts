@@ -10,7 +10,10 @@ import {
   deleteAllIndex,
   restoreBySnapshot,
   getAllIndex,
-  deleteSnapshot
+  deleteSnapshot,
+  getAllSnapshotInRepository,
+  deleteSnapshotUntilComplete,
+  deleteSnapshotsInRepository
 } from "../../src/elasticSearchHelper";
 import { PureTextCardSettings, CodeCardSettings } from "@/Card";
 import axios from "axios";
@@ -130,5 +133,23 @@ describe("測試跟elasticSearch相關的操作", () => {
       const exists = await checkCardIndexPromise("CodeCard", false);
       expect(exists).toBeTruthy(); // 確定有那個index
     });
+  });
+});
+
+describe("temp test", () => {
+  test("haha", async () => {
+    const repositoryName = "test";
+    const snapshotName = uuidv4();
+    const createSanpshotSuccess = await createSanpshot(
+      repositoryName,
+      snapshotName
+    );
+    expect(createSanpshotSuccess).toBeTruthy();
+
+    const list = await getAllSnapshotInRepository(repositoryName);
+    console.log(list);
+    // await deleteAllSnapshotInRepository("test", list);
+    await deleteSnapshotsInRepository(repositoryName, list);
+    // await deleteSnapshot(repositoryName, list[1]);
   });
 });
