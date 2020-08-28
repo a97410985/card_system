@@ -1,5 +1,5 @@
 import axios from "axios";
-import { cardType, PureTextCardSettings, CardSettingInterface } from "./Card";
+import { cardType, PureTextCardSettings, genralCardInterface } from "./Card";
 
 const elasticSearchURL = "http://127.0.0.1:9200/";
 
@@ -76,7 +76,7 @@ export const checkCardIndexPromise = (cardType: cardType, redirect: boolean) =>
 
 export const checkAndCreateCardIndexPromise = (
   cardType: cardType,
-  cardSetting: CardSettingInterface,
+  cardSetting: genralCardInterface,
   redirect: boolean
 ) =>
   axios({
